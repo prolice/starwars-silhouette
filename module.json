@@ -17,6 +17,12 @@
   "flags": {
     "allowBugReporter": true
   },
+  "dependencies": [
+    {
+      "name": "_mathjs",
+      "manifest": "https://raw.githubusercontent.com/League-of-Foundry-Developers/mathjs-lib/master/module.json"
+    }
+  ],
   "bugs": "https://github.com/prolice/starwars-silhouette/issues",
   "url": "https://github.com/prolice/starwars-silhouette",
   "readme": "https://github.com/prolice/starwars-silhouette/blob/starwars-silhouette/README.md",

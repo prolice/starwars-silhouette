@@ -152,20 +152,9 @@ class swSilouhetteModule {
           config: true,
           restricted: true   
         });
-	}
-}
-
-Hooks.once("init", async function () {
-	// TURN ON OR OFF HOOK DEBUGGING
-    CONFIG.debug.hooks = false;
 	
-});
-
-Hooks.on("ready", async () => {
-    swSilouhetteModule.singleton = new swSilouhetteModule();
-    swSilouhetteModule.singleton.init();
-	
-	if (game.settings.get('starwars-silhouette', 'folderRemove')){ 
+           
+      if (game.settings.get('starwars-silhouette', 'folderRemove')){ 
           game.settings.set('starwars-silhouette', 'folderRemove',false);
                     
           game.items.forEach(item => {
@@ -196,7 +185,18 @@ Hooks.on("ready", async () => {
         game.settings.set('starwars-silhouette', 'folderId','');
         game.settings.set('starwars-silhouette', 'folderReset',false);
       }
+	}
+}
+
+Hooks.once("init", async function () {
+	// TURN ON OR OFF HOOK DEBUGGING
+    CONFIG.debug.hooks = false;
 	
+});
+
+Hooks.on("ready", async () => {
+    swSilouhetteModule.singleton = new swSilouhetteModule();
+    swSilouhetteModule.singleton.init();
 	if (game.settings.get('starwars-silhouette', 'importItems') === true){
 	   let actors = game.actors.filter(i => i.type === 'vehicle');
 	   await affectShitAttachmentsItemsToVehicle(actors);
