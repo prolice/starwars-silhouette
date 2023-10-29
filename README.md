@@ -29,13 +29,13 @@ to affect it into your actor sheet as the token image and the silhouette as the 
 * Type "Star Wars" in the Filter - window top right - 
 * Choose "Star Wars Silhouette"
 * Click "Install"
-* Activate the module in your World using **Manage Modules** under the **Game Settings** tab and find Star Wars - User Interface Creative Common.
+* Activate the module in your World using **Manage Modules** under the **Game Settings** tab and find Star Wars Silhouette.
 
 ### Manual Method
 * Open the Foundry application and click **"Install Module"** in the **"Add-On Modules"** tab.
 * Paste the following link: https://raw.githubusercontent.com/prolice/starwars-silhouette/starwars-silhouette/module.json
 * Click "Install" 
-* Activate the module in your World using **Manage Modules** under the **Game Settings** tab and find Star Wars - User Interface Creative Commo.
+* Activate the module in your World using **Manage Modules** under the **Game Settings** tab and find Star Wars Silhouette.
 
 ## Known issues and advices:
 * in construction
