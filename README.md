@@ -16,7 +16,7 @@
 		[![GitHub issues](https://img.shields.io/github/issues/prolice/starwars-silhouette/bug.svg)](https://GitHub.com/prolice/starwars-silhouette/issues/)
 		[![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/prolice/starwars-silhouette/bug.svg)](https://GitHub.com/prolice/starwars-silhouette/issues-closed-raw/)
 ### Link(s) to Module
-* [https://github.com/prolice/swffgUI-cc](https://github.com/prolice/starwars-silhouette)
+* [https://github.com/prolice/starwars-silhouette](https://github.com/prolice/starwars-silhouette)
 
 ### Description 
 Star Wars Silhouette is designed to manage silhouette images in your vehicle actor sheet (planetary or spacial).
