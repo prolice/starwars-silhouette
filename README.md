@@ -38,4 +38,7 @@ to affect it into your actor sheet as the token image and the silhouette as the 
 * Activate the module in your World using **Manage Modules** under the **Game Settings** tab and find Star Wars - User Interface Creative Commo.
 
 ## Known issues and advices:
-* Do not overrule another UI, there is potential issues of compatibility.
+* in construction
+
+## Module inspiration and code added from tiers
+* OggDude importer (starwarsffg system)
