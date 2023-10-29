@@ -39,6 +39,3 @@ to affect it into your actor sheet as the token image and the silhouette as the 
 
 ## Known issues and advices:
 * Do not overrule another UI, there is potential issues of compatibility.
-
-### SPECIAL THANKS
-* Ruby
