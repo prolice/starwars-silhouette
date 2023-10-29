@@ -33,7 +33,7 @@ to affect it into your actor sheet as the token image and the silhouette as the 
 
 ### Manual Method
 * Open the Foundry application and click **"Install Module"** in the **"Add-On Modules"** tab.
-* Paste the following link: https://github.com/prolice/starwars-silhouette/releases/download/v0.0.1/module.json
+* Paste the following link: https://github.com/prolice/starwars-silhouette/raw/starwars-silhouette/module.json
 * Click "Install" 
 * Activate the module in your World using **Manage Modules** under the **Game Settings** tab and find Star Wars Silhouette.
 
