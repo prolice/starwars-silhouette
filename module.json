@@ -1,7 +1,7 @@
 {
   "title": "Star Wars - Silhouette",
   "description": "Display a silhouette by starship type",
-  "version": "0.0.1",
+  "version": "0.0.2-alpha",
   "authors": [
     {
       "name": "Prolice",
@@ -28,7 +28,7 @@
   "readme": "https://github.com/prolice/starwars-silhouette/blob/starwars-silhouette/README.md",
   "changelog": "https://github.com/prolice/starwars-silhouette/blob/starwars-silhouette/changelog.md",
   "manifest": "https://github.com/prolice/starwars-silhouette/raw/starwars-silhouette/module.json",
-  "download": "https://github.com/prolice/starwars-silhouette/releases/download/v0.0.1/module.zip",
+  "download": "https://github.com/prolice/starwars-silhouette/releases/download/v0.0.2-alpha/module.zip",
   "id": "starwars-silhouette",
   "relationships": {
     "systems": [
