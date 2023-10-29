@@ -120,7 +120,7 @@ class swSilouhetteModule {
             type: String,
             filePicker: 'folder',
         default:
-            'worlds/test-ui/images/VehicleSilhouettes',
+            'modules/starwars-silhouette/image/VehicleSilhouettes',
             config: true,
             restricted: true
         });
@@ -130,7 +130,7 @@ class swSilouhetteModule {
             type: String,
             filePicker: 'folder',
         default:
-            'worlds/test-ui/images/VehicleImages',
+            'modules/starwars-silhouette/image/VehicleImages',
             config: true,
             restricted: true
         });
@@ -223,10 +223,10 @@ class swSilouhetteModule {
    * @param  {object} zip - Zip file
    * @returns {string} - Path to file within VTT
    */
-  async function importImage(path, zip) {
+  async function importImage(path, zip, serverPath) {
     if (path) {
       //const serverPath = `worlds/${game.world.id}/images/packs/${pack.metadata.name}`;
-      const serverPath = `modules/starwars-silhouette/image/vehicleImages`;
+      //const serverPath = `modules/starwars-silhouette/image/vehicleImages`;
       const filename = path.replace(/^.*[\\\/]/, "");
       if (!CONFIG.temporary.images) {
         CONFIG.temporary.images = [];
@@ -726,59 +726,65 @@ class DataImporter extends FormApplication {
                 if (form.data.files.length) {
                     zip = await readBlobFromFile(form.data.files[0]).then(JSZip.loadAsync);
                 }
-            }
+            }           
+            
+            await this.asyncForEach(importFiles, async (file) => {
+                if ( file.file.includes('/VehicleImages')) {
+                     const files = Object.values(zip.files).filter((file) => {
+                        return !file.dir && file.name.split(".").pop() === "png" && file.name.includes("/VehicleImages/");
+                    });
+                    let serverPath = `modules/starwars-silhouette/image/VehicleImages`;
+                    let totalCount = files.length;
+                    let currentCount = 0;
+                    if (files.length) {
+                        CONFIG.logger.debug(`Starting Oggdude Vehicle Images Import`);
+                        $(".import-progress.vehicleImage").toggleClass("import-hidden");
+                        await this.asyncForEach(files, async(file) => {
+                            try {
+                                let myNewFile = importImage(file.name,zip,serverPath);
+                                currentCount += 1;
 
-            const files = Object.values(zip.files).filter((file) => {
-                return !file.dir && file.name.split(".").pop() === "png" && file.name.includes("/VehicleImages/");
-            });
-            let totalCount = files.length;
-            let currentCount = 0;
-            if (files.length) {
-                CONFIG.logger.debug(`Starting Oggdude Vehicle Images Import`);
-                $(".import-progress.vehicleImage").toggleClass("import-hidden");
-                await this.asyncForEach(files, async(file) => {
-                    try {
+                                $(".vehicleImage .import-progress-bar")
+                                    .width(`${Math.trunc((currentCount / totalCount) * 100)}%`)
+                                    .html(`<span>${Math.trunc((currentCount / totalCount) * 100)}%</span>`);
 
-                        let myNewFile = importImage(file.name,zip);
-                        currentCount += 1;
-
-                        $(".vehicleImage .import-progress-bar")
-                            .width(`${Math.trunc((currentCount / totalCount) * 100)}%`)
-                            .html(`<span>${Math.trunc((currentCount / totalCount) * 100)}%</span>`);
-                        //CONFIG.logger.debug(myNewFile);
-                        /*const zipData = await zip.file(file.name).async('uint8array');*/
-                        /*const imgDataArray = new Uint8Array(zipData);
-                        const imgBlob = new Blob([imgDataArray], {
-                            type: 'image/png'
+                            } catch (err) {
+                                CONFIG.logger.error(`Error importing record : `, err);
+                            }
                         });
-                        let fileName = extractFileName(file.name);
-                        //new File([imgBlob], 'modules/starwars-silhouette/image/'+fileName);
-                        var fd = new FormData();
-                        var url = 'modules/starwars-silhouette/image/' + fileName + '.png';
-
-                        fd.set("source", file.name);
-                        fd.set("target", url);
-                        fd.set("upload", imgBlob);
-                        Object.entries({
-                            bucket: null
-                        }).forEach((o) => fd.set(...o));
-
-                        const request = await fetch(FilePicker.uploadURL, {
-                            method: "POST",
-                            body: fd
-                        });
-                        if (request.status === 413) {
-                            return ui.notifications.error(game.i18n.localize("FILES.ErrorTooLarge"));
-                        }*/
-
-                    } catch (err) {
-                        CONFIG.logger.error(`Error importing record : `, err);
+                        game.settings.set('starwars-silhouette', 'vehicleImageFolder',serverPath);
                     }
-                });
+                }
+                if ( file.file.includes('/VehicleSilhouettes')) {
+                    const files = Object.values(zip.files).filter((file) => {
+                        return !file.dir && file.name.split(".").pop() === "png" && file.name.includes("/VehicleSilhouettes/");
+                    });
+                    let serverPath = `modules/starwars-silhouette/image/VehicleSilhouettes`;
+                    let totalCount = files.length;
+                    let currentCount = 0;
+                    if (files.length) {
+                        CONFIG.logger.debug(`Starting Oggdude Vehicle Silhouettes Images Import`);
+                        $(".import-progress.vehicleSilhouettes").toggleClass("import-hidden");
+                        await this.asyncForEach(files, async(file) => {
+                            try {
+                                let myNewFile = importImage(file.name,zip,serverPath);
+                                currentCount += 1;
 
-                CONFIG.temporary = {};
-                this.close();
-            }
+                                $(".vehicleSilhouettes .import-progress-bar")
+                                    .width(`${Math.trunc((currentCount / totalCount) * 100)}%`)
+                                    .html(`<span>${Math.trunc((currentCount / totalCount) * 100)}%</span>`);
+
+                            } catch (err) {
+                                CONFIG.logger.error(`Error importing record : `, err);
+                            }
+                        });
+                        game.settings.set('starwars-silhouette', 'vehicleSilhouetteImageFolder',serverPath);
+                    }
+                }
+                
+            });
+            CONFIG.temporary = {};
+            this.close();
         }
     }
 
