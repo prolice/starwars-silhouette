@@ -135,20 +135,11 @@ class swSilouhetteModule {
             restricted: true
         });
 
-        /*game.settings.registerMenu('starwars-silhouette', 'vehicleSilhouetteUploadImage', {
-        name: 'Vehicle Silhoutte Upload Image Folder',
-        type: String,
-        filePicker: true,
-        default:
-        '',
-        config: true,
-        restricted: true,
-        });*/
         game.settings.registerMenu('starwars-silhouette', 'vehicleSilhouetteUploadImage', {
             name: "Vehicle Silhoutte Upload Image Folder",
             label: "Import Images", // The text label used in the button
-            hint: "A description of what will occur in the submenu dialog.",
-            icon: "fas fa-bars", // A Font Awesome icon used in the submenu button
+            hint: "Import images in Star Wars Silhouette module from data.zip (oggdude)",
+            icon: "fas fa-upload", // A Font Awesome icon used in the submenu button
             type: DataImporter, // A FormApplication subclass
             restricted: true // Restrict this submenu to gamemaster only?
         });
@@ -188,34 +179,7 @@ class swSilouhetteModule {
         //importImage('Data/VehicleSilhouettes',''
     }
 }
- /**
-   * Verifies server path exists, and if it doesn't creates it.
-   *
-   * @param  {string} startingSource - Source
-   * @param  {string} path - Server path to verify
-   * @returns {boolean} - true if verfied, false if unable to create/verify
-   */
-  async function verifyPath(startingSource, path) {
-    try {
-      const paths = path.split("/");
-      let currentSource = paths[0];
-
-      for (let i = 0; i < paths.length; i += 1) {
-        try {
-          if (currentSource !== paths[i]) {
-            currentSource = `${currentSource}/${paths[i]}`;
-          }
-          await FilePicker.createDirectory(startingSource, `${currentSource}`, { bucket: null });
-        } catch (err) {
-          CONFIG.logger.debug(`Error verifying path ${startingSource}, ${path}`, err);
-        }
-      }
-    } catch (err) {
-      return false;
-    }
-
-    return true;
-  }
+ 
   /**
    * Imports binary file, by extracting from zip file and uploading to path.
    *
@@ -253,7 +217,6 @@ class swSilouhetteModule {
       }
     }
   }
-
 
 /**
  * Uploads a file to Foundry without the UI Notification
@@ -340,10 +303,6 @@ Hooks.on("ready", async() => {
 
 });
 
-/*Hooks.once('ready', async function () {
-
-});*/
-
 Hooks.on("renderActorSheetFFG", (app, html, data) => {
     const dirHeader = html[0].querySelector(".defense-decoration");
 
@@ -416,7 +375,7 @@ async function importImageFromOggImageFolder(actors) {
     let defaultSilhouette = `modules/starwars-silhouette/image/shipdefence.png`;
     actors.forEach(actor => {
         let imageName = extractFileName(actor.img);
-        if (imageName === 'mystery-man')
+        if (imageName === 'mystery-man' || imageName === 'shipdefence')
             updateImage(defaultSilhouette, actor);
     });
     let folderPath = game.settings.get('starwars-silhouette', 'vehicleImageFolder');
@@ -764,13 +723,13 @@ class DataImporter extends FormApplication {
                     let currentCount = 0;
                     if (files.length) {
                         CONFIG.logger.debug(`Starting Oggdude Vehicle Silhouettes Images Import`);
-                        $(".import-progress.vehicleSilhouettes").toggleClass("import-hidden");
+                        $(".import-progress.VehicleSilhouettes").toggleClass("import-hidden");
                         await this.asyncForEach(files, async(file) => {
                             try {
                                 let myNewFile = importImage(file.name,zip,serverPath);
                                 currentCount += 1;
 
-                                $(".vehicleSilhouettes .import-progress-bar")
+                                $(".VehicleSilhouettes .import-progress-bar")
                                     .width(`${Math.trunc((currentCount / totalCount) * 100)}%`)
                                     .html(`<span>${Math.trunc((currentCount / totalCount) * 100)}%</span>`);
 
