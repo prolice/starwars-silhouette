@@ -711,6 +711,7 @@ class DataImporter extends FormApplication {
                                 CONFIG.logger.error(`Error importing record : `, err);
                             }
                         });
+                        ui.notifications.info("Vehicle Image imported successfully: " + currentCount.toString()+" images" );
                         game.settings.set('starwars-silhouette', 'vehicleImageFolder',serverPath);
                     }
                 }
@@ -737,6 +738,7 @@ class DataImporter extends FormApplication {
                                 CONFIG.logger.error(`Error importing record : `, err);
                             }
                         });
+                        ui.notifications.info("Vehicle Silhouette Image imported successfully: " + currentCount.toString()+" images" );
                         game.settings.set('starwars-silhouette', 'vehicleSilhouetteImageFolder',serverPath);
                     }
                 }
