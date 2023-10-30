@@ -11,13 +11,19 @@
     </div>
   </div>
   <div>
+    <div id="first-step" name="firststep" style="display: flex;justify-content: flex-end; visibility: hidden;" >
+      <div style="white-space: nowrap;color:green">
+        Image successfully imported
+        <i class="fa-solid fa-circle-check"></i>
+      </div>
+    </div>
     <div style="display: flex;">
       <div style="white-space: nowrap;">
         <input type="checkbox" id="importVehicleImages" name="imports" value="/VehicleImages/" data-name="Image" data-type="Image" data-itemtype="" disabled />
         <label for="importVehicleImages">Vehicle Images</label><br />
       </div>
       <div class="import-progress vehicleImage import-hidden">
-        <div class="import-progress-bar" style="width: 0%;"></div>
+        <div class="import-progress-bar" style="width: 0%; color: white;"></div>
       </div>
     </div>
     <div style="display: flex;">
@@ -26,7 +32,7 @@
         <label for="importVehicleSilhouettes">Vehicle Silhouette Images</label><br />
       </div>
       <div class="import-progress VehicleSilhouettes import-hidden">
-        <div class="import-progress-bar" style="width: 0%;"></div>
+        <div class="import-progress-bar" style="width: 0%; color: white;"></div>
       </div>
     </div>
   </div>
@@ -38,22 +44,28 @@
      
   </div>
   <div>
-  <div style="display: flex;">
-      <div style="white-space: nowrap;">
-        <input type="checkbox" id="creationShipAttachmentItems" name="creation" value="/ShipAttachmentItems/" data-name="Silhouette" data-type="Items" data-itemtype="shipattachment" />
-        <label for="creationShipAttachmentItems">Creation ship attachment items</label><br />
-      </div>
-      <div class="import-progress ShipAttachmentItems import-hidden">
-        <div class="import-progress-bar" style="width: 0%;"></div>
+    <div id="second-step" name="secondstep" style="display: flex;justify-content: flex-end; visibility: hidden;" >
+      <div style="white-space: nowrap;color:green">
+        Items sucessfully created and affected
+        <i class="fa-solid fa-circle-check"></i>
       </div>
     </div>
     <div style="display: flex;">
       <div style="white-space: nowrap;">
-        <input type="checkbox" id="affectShipAttachmentItems" name="creation" value="/AffectShipAttachmentItems/" data-name="Silhouette" data-type="Items" data-itemtype="shipattachment" />
+        <input type="checkbox" id="creationShipAttachmentItems" name="creation" value="/ShipAttachmentItems/" data-name="Silhouette" data-type="Items" data-itemtype="shipattachment" disabled />
+        <label for="creationShipAttachmentItems">Creation ship attachment items</label><br />
+      </div>
+      <div class="import-progress ShipAttachmentItems import-hidden">
+        <div class="import-progress-bar" style="width: 0%; color: white;"></div>
+      </div>
+    </div>
+    <div style="display: flex;">
+      <div style="white-space: nowrap;">
+        <input type="checkbox" id="affectShipAttachmentItems" name="creation" value="/AffectShipAttachmentItems/" data-name="Silhouette" data-type="Items" data-itemtype="shipattachment" disabled />
         <label for="affectShipAttachmentItems">Affect ship attachment items</label><br />
       </div>
       <div class="import-progress AffectShipAttachmentItems import-hidden">
-        <div class="import-progress-bar" style="width: 0%;"></div>
+        <div class="import-progress-bar" style="width: 0%; color: white;" ></div>
       </div>
     </div>
   </div>
