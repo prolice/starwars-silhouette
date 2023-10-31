@@ -23,6 +23,9 @@ Star Wars Silhouette is designed to manage silhouette images in your vehicle act
 It takes the oggdude import id code in your actor item and looking for an image (which is to be upload from oggdude data.zip->vehicle images and data.zip->vehicle silhouette.
 to affect it into your actor sheet as the token image and the silhouette as the new silhouette image.
 
+**Features Overview:**
+* [![Features overview](https://img.youtube.com/vi/l28kL0sw0fU/0.jpg)](https://youtu.be/l28kL0sw0fU)
+
 ## Installation
 ### Auto install Method (recommended)
 * Open the Foundry application and click **"Install Module"** in the **"Add-On Modules"** tab.
