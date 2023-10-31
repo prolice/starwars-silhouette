@@ -38,7 +38,7 @@ to affect it into your actor sheet as the token image and the silhouette as the 
 * Activate the module in your World using **Manage Modules** under the **Game Settings** tab and find Star Wars Silhouette.
 
 ## Known issues and advices:
-* Do not overrule another UI, there is potential issues of compatibility.
+* Release Candidate for instance
 
 ## Inspired module and code from tiers
 * OggDude importer (starwarsffg system), use partial code in order to manage the image importation
