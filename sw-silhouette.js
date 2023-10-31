@@ -49,6 +49,16 @@ class swSilouhetteModule {
             0,
             config: false,
         });
+        
+        game.settings.register('starwars-silhouette', 'affectShipAttachmentItems', {
+            name: 'affectShipAttachmentItems',
+            hint: '',
+            scope: 'world',
+            type: Number,
+        default:
+            0,
+            config: false,
+        });
 
         game.settings.register('starwars-silhouette', 'folderCreated', {
             name: 'folderCreated',
@@ -297,9 +307,6 @@ Hooks.on("ready", async() => {
         game.settings.set('starwars-silhouette', 'folderId', '');
     } else {
         let actors = game.actors.filter(i => i.type === 'vehicle');
-        /*if (game.settings.get('starwars-silhouette', 'importItems') === true) {
-        await createShipAttachmentsItems();
-        }*/
 
         await changeScaleOnSilhouette(actors);
 
@@ -312,6 +319,7 @@ Hooks.on("ready", async() => {
         game.settings.set('starwars-silhouette', 'vehicleImagesCount', 0);
         game.settings.set('starwars-silhouette', 'vehicleImagesSilhouetteCount', 0);
         game.settings.set('starwars-silhouette', 'creationShipAttachmentItems', 0);
+        game.settings.set('starwars-silhouette', 'affectShipAttachmentItems', 0);
         game.settings.set('starwars-silhouette', 'folderCreated', false);
         game.settings.set('starwars-silhouette', 'folderId', '');
         game.settings.set('starwars-silhouette', 'folderReset', false);
@@ -647,7 +655,15 @@ class DataImporter extends FormApplication {
             .width(`100%`)
             .html(`<span>${creationShipAttachmentItemsCount} items found</span>`);
         }
-        
+        let affectShipAttachmentItemsCount = game.settings.get('starwars-silhouette', 'affectShipAttachmentItems');
+        if (affectShipAttachmentItemsCount){
+            $("input[type='checkbox'][name='creation'][id='affectShipAttachmentItems']").attr("disabled", true);
+            $(".import-progress.AffectShipAttachmentItems").toggleClass("import-hidden");
+            $("div[id='second-step'][name='secondstep']").attr("style", "display: flex;justify-content: flex-end; visibility: visible;");
+            $(".AffectShipAttachmentItems .import-progress-bar")
+            .width(`100%`)
+            .html(`<span>${affectShipAttachmentItemsCount} items affected</span>`);
+        }
     }
 
     _importLog = [];
@@ -803,7 +819,7 @@ class DataImporter extends FormApplication {
             });
 
             CONFIG.temporary = {};
-            //this.close();
+            this.close();
         }
         if (action === "creation") {
             const itemCreation = $("input:checkbox[name=creation]:checked")
@@ -881,9 +897,10 @@ class DataImporter extends FormApplication {
                         console.log(ffgimportid);
                     });
                     if (currentCount === 0) {
-                        ui.notifications.warn("No items were found in the Silhouette Folder !");
+                        ui.notifications.warn("No actor were affected or there is no actor !");
                     } else {
                         ui.notifications.info("Ship attachments items affected to vehicle successfully: " + currentCount.toString() + " items");
+                        game.settings.set('starwars-silhouette', 'affectShipAttachmentItems',currentCount);
                     }
 
                 }
