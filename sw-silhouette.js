@@ -411,10 +411,14 @@ async function importImageFromOggImageFolder(actors) {
     files.forEach(async file => {
         // Extract the name without path and extension
         let fileName = extractFileName(file);
-        let actor = actors.filter(i => i.flags.starwarsffg.ffgimportid == fileName);
+
+        let actor = actors.filter(i => i.flags.starwarsffg?.ffgimportid == fileName);
+        if (actor){
         let imageUrl = actor[0] ? game.settings.get('starwars-silhouette', 'vehicleImageFolder') + `/${actor[0].flags.starwarsffg.ffgimportid}.png` : defaultSilhouette;
-        if (actor[0])
-            updateImage(imageUrl, actor[0]);
+            if (actor[0]) {
+                    updateImage(imageUrl, actor[0]);
+            }
+        }
     });
 }
 
@@ -624,14 +628,14 @@ class DataImporter extends FormApplication {
 
         let folderPath = game.settings.get('starwars-silhouette', 'vehicleImageFolder');
         let vehicleImagesCount = game.settings.get('starwars-silhouette', 'vehicleImagesCount');
-        
+
         let dataImage = await FilePicker.browse("data", folderPath, {
             bucket: null,
             extensions: [".png", ".PNG"],
             wildcard: false
         });
         let vehicleImagesUploadedCount = dataImage.files.length;
-        
+
         folderPath = game.settings.get('starwars-silhouette', 'vehicleSilhouetteImageFolder');
 
         let dataSilhouetteImage = await FilePicker.browse("data", folderPath, {
@@ -891,17 +895,19 @@ class DataImporter extends FormApplication {
                     let currentCount = 0;
                     //actors.forEach(actor => {
                     await this.asyncForEach(actors, async(actor) => {
-                        let ffgimportid = actor.flags.starwarsffg.ffgimportid;
-                        let item = game.items.filter(i => i.name == "VT:" + ffgimportid);
-                        let existItemActor = actor.items.filter(i => i.name == "VT:" + ffgimportid);
-                        if (existItemActor.length === 0) {
-                            const data = item;
-                            updateItems(data, actor);
-                            currentCount += 1;
+                        let ffgimportid = actor.flags.starwarsffg?.ffgimportid;
+                        if (ffgimportid) {
+                            let item = game.items.filter(i => i.name == "VT:" + ffgimportid);
+                            let existItemActor = actor.items.filter(i => i.name == "VT:" + ffgimportid);
+                            if (existItemActor.length === 0) {
+                                const data = item;
+                                updateItems(data, actor);
+                                currentCount += 1;
 
-                            $(".AffectShipAttachmentItems .import-progress-bar")
-                            .width(`${Math.trunc((currentCount / totalCount) * 100)}%`)
-                            .html(`<span>${Math.trunc((currentCount / totalCount) * 100)}%</span>`);
+                                $(".AffectShipAttachmentItems .import-progress-bar")
+                                .width(`${Math.trunc((currentCount / totalCount) * 100)}%`)
+                                .html(`<span>${Math.trunc((currentCount / totalCount) * 100)}%</span>`);
+                            }
                         }
 
                         console.log(ffgimportid);
