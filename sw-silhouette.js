@@ -39,7 +39,7 @@ class swSilouhetteModule {
             0,
             config: false,
         });
-        
+
         game.settings.register('starwars-silhouette', 'creationShipAttachmentItems', {
             name: 'creationShipAttachmentItems',
             hint: '',
@@ -49,7 +49,7 @@ class swSilouhetteModule {
             0,
             config: false,
         });
-        
+
         game.settings.register('starwars-silhouette', 'affectShipAttachmentItems', {
             name: 'affectShipAttachmentItems',
             hint: '',
@@ -323,14 +323,8 @@ Hooks.on("ready", async() => {
         game.settings.set('starwars-silhouette', 'folderCreated', false);
         game.settings.set('starwars-silhouette', 'folderId', '');
         game.settings.set('starwars-silhouette', 'folderReset', false);
-        
+
     }
-
-    /*if (game.settings.get('starwars-silhouette', 'importItems') === true) {
-    let actors = game.actors.filter(i => i.type === 'vehicle');
-    await affectShitAttachmentsItemsToVehicle(actors);
-    }*/
-
 });
 
 Hooks.on("renderActorSheetFFG", (app, html, data) => {
@@ -621,18 +615,34 @@ class DataImporter extends FormApplication {
     }
 
     /** @override */
-    activateListeners(html) {
+    async activateListeners(html) {
         super.activateListeners(html);
 
         $(`<span class="debug"><label><input type="checkbox" /> Generate Log</label></span>`).insertBefore("#data-importer header a");
 
         html.find(".dialog-button").on("click", this._dialogButton.bind(this));
 
+        let folderPath = game.settings.get('starwars-silhouette', 'vehicleImageFolder');
         let vehicleImagesCount = game.settings.get('starwars-silhouette', 'vehicleImagesCount');
-        let vehicleImagesSilhouetteCount = game.settings.get('starwars-silhouette', 'vehicleImagesSilhouetteCount');
+        
+        let dataImage = await FilePicker.browse("data", folderPath, {
+            bucket: null,
+            extensions: [".png", ".PNG"],
+            wildcard: false
+        });
+        let vehicleImagesUploadedCount = dataImage.files.length;
+        
+        folderPath = game.settings.get('starwars-silhouette', 'vehicleSilhouetteImageFolder');
+
+        let dataSilhouetteImage = await FilePicker.browse("data", folderPath, {
+            bucket: null,
+            extensions: [".png", ".PNG"],
+            wildcard: false
+        });
+        let vehicleImagesSilhouetteUploadedCount = dataSilhouetteImage.files.length;
 
         //Force enabled checkbox
-        if (vehicleImagesCount && vehicleImagesSilhouetteCount) {
+        if (vehicleImagesSilhouetteUploadedCount && vehicleImagesUploadedCount) {
             $("input[type='checkbox'][name='creation'][id='creationShipAttachmentItems']").attr("disabled", false);
             $("input[type='checkbox'][name='creation'][id='affectShipAttachmentItems']").attr("disabled", false);
             $(".import-progress.vehicleImage").toggleClass("import-hidden");
@@ -640,14 +650,14 @@ class DataImporter extends FormApplication {
             $("div[id='first-step'][name='firststep']").attr("style", "display: flex;justify-content: flex-end; visibility: visible;");
             $(".vehicleImage .import-progress-bar")
             .width(`100%`)
-            .html(`<span>${vehicleImagesCount} images found</span>`);
+            .html(`<span>${vehicleImagesUploadedCount} images found</span>`);
 
             $(".VehicleSilhouettes .import-progress-bar")
             .width(`100%`)
-            .html(`<span>${vehicleImagesSilhouetteCount} images found</span>`);
+            .html(`<span>${vehicleImagesSilhouetteUploadedCount} images found</span>`);
         }
         let creationShipAttachmentItemsCount = game.settings.get('starwars-silhouette', 'creationShipAttachmentItems');
-        if (creationShipAttachmentItemsCount){
+        if (creationShipAttachmentItemsCount) {
             $("input[type='checkbox'][name='creation'][id='creationShipAttachmentItems']").attr("disabled", true);
             $(".import-progress.ShipAttachmentItems").toggleClass("import-hidden");
             $("div[id='second-step'][name='secondstep']").attr("style", "display: flex;justify-content: flex-end; visibility: visible;");
@@ -656,7 +666,7 @@ class DataImporter extends FormApplication {
             .html(`<span>${creationShipAttachmentItemsCount} items found</span>`);
         }
         let affectShipAttachmentItemsCount = game.settings.get('starwars-silhouette', 'affectShipAttachmentItems');
-        if (affectShipAttachmentItemsCount){
+        if (affectShipAttachmentItemsCount) {
             $("input[type='checkbox'][name='creation'][id='affectShipAttachmentItems']").attr("disabled", true);
             $(".import-progress.AffectShipAttachmentItems").toggleClass("import-hidden");
             $("div[id='second-step'][name='secondstep']").attr("style", "display: flex;justify-content: flex-end; visibility: visible;");
@@ -867,7 +877,7 @@ class DataImporter extends FormApplication {
                             ui.notifications.warn("No file were found in the Silhouette Folder !");
                         } else {
                             ui.notifications.info("Ship attachments items created successfully: " + currentCount.toString() + " items");
-                            game.settings.set('starwars-silhouette', 'creationShipAttachmentItems',currentCount);
+                            game.settings.set('starwars-silhouette', 'creationShipAttachmentItems', currentCount);
                         }
                     } else {
                         ui.notifications.warn("Folder Silhouette already created, delete it and reset the module !");
@@ -900,7 +910,7 @@ class DataImporter extends FormApplication {
                         ui.notifications.warn("No actor were affected or there is no actor !");
                     } else {
                         ui.notifications.info("Ship attachments items affected to vehicle successfully: " + currentCount.toString() + " items");
-                        game.settings.set('starwars-silhouette', 'affectShipAttachmentItems',currentCount);
+                        game.settings.set('starwars-silhouette', 'affectShipAttachmentItems', currentCount);
                     }
 
                 }
