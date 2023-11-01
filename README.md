@@ -44,5 +44,5 @@ to affect it into your actor sheet as the token image and the silhouette as the 
 * Release Candidate for instance
 
 ## Inspired module and code from tiers
-* OggDude importer (starwarsffg system): The module Silhouette a part of the OggDude Importer code in order to manage the image importation
+* OggDude importer (starwarsffg system): The module Silhouette is using a part of the OggDude Importer code in order to manage the image importation
 
