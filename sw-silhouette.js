@@ -379,7 +379,8 @@ async function updateTokenScale(height, width, actor) {
 
 async function updateImage(imageUrl, actor) {
     await actor.update({
-        "img": imageUrl
+        "img": imageUrl,
+        "prototypeToken.texture.src": imageUrl
     });
 }
 
