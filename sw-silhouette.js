@@ -246,6 +246,20 @@ async function importImage(path, zip, serverPath) {
     }
 }
 
+async function ForgeUploadFile(source, path, file, options) {
+    const fd = new FormData();
+    fd.append("file", file);
+    fd.append("path", `${path}/${file.name}`);
+
+    const response = await ForgeAPI.call("assets/upload", fd);
+    if (!response || response.error) {
+      ui.notifications.error(response ? response.error : "An unknown error occured accessing The Forge API");
+      return false;
+    } else {
+      return { path: response.url };
+    }
+  }
+
 /**
  * Uploads a file to Foundry without the UI Notification
  * @param  {string} source
@@ -255,19 +269,19 @@ async function importImage(path, zip, serverPath) {
  */
 async function UploadFile(source, path, file, options) {
     if (typeof ForgeVTT !== "undefined" && ForgeVTT?.usingTheForge) {
-        return Helpers.ForgeUploadFile("forgevtt", path, file, options);
+        return ForgeUploadFile("forgevtt", path, file, options);
     }
-
     let fd = new FormData();
     fd.set("source", source);
     fd.set("target", path);
     fd.set("upload", file);
     Object.entries(options).forEach((o) => fd.set(...o));
-
+    
     const request = await fetch(FilePicker.uploadURL, {
         method: "POST",
         body: fd
     });
+    
     if (request.status === 413) {
         return ui.notifications.error(game.i18n.localize("FILES.ErrorTooLarge"));
     }
