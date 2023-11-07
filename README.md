@@ -26,6 +26,9 @@ to affect it into your actor sheet as the token image and the silhouette as the 
 **Features Overview:**
 * [![Features overview](https://img.youtube.com/vi/l28kL0sw0fU/0.jpg)](https://youtu.be/l28kL0sw0fU)
 
+**Warning**
+If you use this module as a "Release Candidate", please be sure that you have made a backup of your world!
+
 ## Installation
 ### Auto install Method (recommended)
 * Open the Foundry application and click **"Install Module"** in the **"Add-On Modules"** tab.
