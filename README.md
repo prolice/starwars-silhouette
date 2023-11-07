@@ -26,7 +26,7 @@ to affect it into your actor sheet as the token image and the silhouette as the 
 **Features Overview:**
 * [![Features overview](https://img.youtube.com/vi/l28kL0sw0fU/0.jpg)](https://youtu.be/l28kL0sw0fU)
 
-**Warning**
+### Warning
 If you use this module as a "Release Candidate", please be sure that you have made a backup of your world!
 
 ## Installation
