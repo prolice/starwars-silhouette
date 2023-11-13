@@ -3,7 +3,7 @@
 
 * **Author**: .prolice
 * **Version**: ![](https://img.shields.io/github/v/release/prolice/starwars-silhouette?color=green&label=SW-Silhouette)
-* **Foundry VTT Compatibility**: ![](https://img.shields.io/badge/Foundry-v10-informational) to ![](https://img.shields.io/badge/Foundry-v11.313-informational)
+* **Foundry VTT Compatibility**: ![](https://img.shields.io/badge/Foundry-v10-informational) to ![](https://img.shields.io/badge/Foundry-v11.315-informational)
 
 * **System Compatibility**: ![](https://img.shields.io/badge/Starwarsffg-v1.801-orange) to ![](https://img.shields.io/badge/Starwarsffg-v1.801-orange) 
 * **Repository size**: ![](https://img.shields.io/github/repo-size/prolice/starwars-silhouette)

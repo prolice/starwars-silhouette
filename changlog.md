@@ -1,5 +1,12 @@
 ## RELEASE NOTES
 
+**Version [0.0.4-alpha.1]
+* Fix folder destination parameter
+* Add option to choose silhouette image as vehicle image
+
+**Version [0.0.3-rc.4]
+* Add prototypeToken.texture.src as an update
+
 **Version [0.0.3-rc.3]
 * Compatibility with the Forge
 
