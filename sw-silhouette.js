@@ -105,7 +105,7 @@ class swSilouhetteModule {
         });
 
         game.settings.register('starwars-silhouette', 'scaleSilhouetteRatio', {
-            name: 'How big I want to see a Destroyer ?',
+            name: 'How big you want to see a Destroyer ?',
             hint: 'The bigger the number is, the smaller the scale will be !',
             scope: 'world',
             type: Number,
@@ -134,11 +134,32 @@ class swSilouhetteModule {
             false,
             config: true,
             restricted: true,
-            onChange: value => {
-                console.log(value);
-                /*location.reload();*/
-            },
         });
+        
+        game.settings.register('starwars-silhouette', 'useSilhouetteAsVehicleImage', {
+            name: 'Use silhouette as vehicle image ?',
+            hint: 'Do you want to use all the silhouette images from "OggDude importation" as vehicle image ?',
+            scope: 'world',
+            type: Boolean,
+            requiresReload: true, // This will prompt the user to reload the application for the setting to take effect.
+        default:
+            false,
+            config: true,
+            restricted: true,
+        });
+        
+        game.settings.register('starwars-silhouette', 'forceParsingVehicleImage', {
+            name: 'Do you want to force the vehicle image ?',
+            hint: 'Force to reevaluate if vehicle image has an update.',
+            scope: 'world',
+            type: Boolean,
+            requiresReload: true, // This will prompt the user to reload the application for the setting to take effect.
+        default:
+            false,
+            config: true,
+            restricted: true,
+        });
+        
         game.settings.register('starwars-silhouette', 'vehicleSilhouetteImageFolder', {
             name: 'Vehicle Silhoutte Image Folder',
             type: String,
@@ -253,12 +274,14 @@ async function ForgeUploadFile(source, path, file, options) {
 
     const response = await ForgeAPI.call("assets/upload", fd);
     if (!response || response.error) {
-      ui.notifications.error(response ? response.error : "An unknown error occured accessing The Forge API");
-      return false;
+        ui.notifications.error(response ? response.error : "An unknown error occured accessing The Forge API");
+        return false;
     } else {
-      return { path: response.url };
+        return {
+            path: response.url
+        };
     }
-  }
+}
 
 /**
  * Uploads a file to Foundry without the UI Notification
@@ -276,12 +299,12 @@ async function UploadFile(source, path, file, options) {
     fd.set("target", path);
     fd.set("upload", file);
     Object.entries(options).forEach((o) => fd.set(...o));
-    
+
     const request = await fetch(FilePicker.uploadURL, {
         method: "POST",
         body: fd
     });
-    
+
     if (request.status === 413) {
         return ui.notifications.error(game.i18n.localize("FILES.ErrorTooLarge"));
     }
@@ -417,7 +440,11 @@ async function importImageFromOggImageFolder(actors) {
         if (imageName === 'mystery-man' || imageName === 'shipdefence')
             updateImage(defaultSilhouette, actor);
     });
+    
     let folderPath = game.settings.get('starwars-silhouette', 'vehicleImageFolder');
+    if (game.settings.get('starwars-silhouette', 'useSilhouetteAsVehicleImage')){
+        folderPath = game.settings.get('starwars-silhouette', 'vehicleSilhouetteImageFolder');
+    }
 
     let {
         files
@@ -426,12 +453,15 @@ async function importImageFromOggImageFolder(actors) {
     files.forEach(async file => {
         // Extract the name without path and extension
         let fileName = extractFileName(file);
-
         let actor = actors.filter(i => i.flags.starwarsffg?.ffgimportid == fileName);
-        if (actor){
-        let imageUrl = actor[0] ? game.settings.get('starwars-silhouette', 'vehicleImageFolder') + `/${actor[0].flags.starwarsffg.ffgimportid}.png` : defaultSilhouette;
-            if (actor[0]) {
+        let imageName = actor[0] ? extractFileName(actor[0].img) : 'shipdefence';
+        
+        if (imageName === 'mystery-man' || imageName === 'shipdefence' || game.settings.get('starwars-silhouette', 'forceParsingVehicleImage')) {    
+            if (actor) {
+                let imageUrl = actor[0] ? folderPath + `/${actor[0].flags.starwarsffg.ffgimportid}.png` : defaultSilhouette;
+                if (actor[0]) {
                     updateImage(imageUrl, actor[0]);
+                }
             }
         }
     });
@@ -789,7 +819,8 @@ class DataImporter extends FormApplication {
                     const files = Object.values(zip.files).filter((file) => {
                         return !file.dir && file.name.split(".").pop() === "png" && file.name.includes("/VehicleImages/");
                     });
-                    let serverPath = `modules/starwars-silhouette/image/VehicleImages`;
+                    //let serverPath = `modules/starwars-silhouette/image/VehicleImages`;
+                    let serverPath = game.settings.get('starwars-silhouette', 'vehicleImageFolder', );
                     let totalCount = files.length;
                     let currentCount = 0;
                     if (files.length) {
@@ -810,14 +841,15 @@ class DataImporter extends FormApplication {
                         });
                         ui.notifications.info("Vehicle Image imported successfully: " + currentCount.toString() + " images");
                         game.settings.set('starwars-silhouette', 'vehicleImagesCount', currentCount);
-                        game.settings.set('starwars-silhouette', 'vehicleImageFolder', serverPath);
+                        //game.settings.set('starwars-silhouette', 'vehicleImageFolder', serverPath);
                     }
                 }
                 if (file.file.includes('/VehicleSilhouettes')) {
                     const files = Object.values(zip.files).filter((file) => {
                         return !file.dir && file.name.split(".").pop() === "png" && file.name.includes("/VehicleSilhouettes/");
                     });
-                    let serverPath = `modules/starwars-silhouette/image/VehicleSilhouettes`;
+                    //let serverPath = `modules/starwars-silhouette/image/VehicleSilhouettes`;
+                    let serverPath = game.settings.get('starwars-silhouette', 'vehicleSilhouetteImageFolder');
                     let totalCount = files.length;
                     let currentCount = 0;
 
@@ -839,7 +871,7 @@ class DataImporter extends FormApplication {
                         });
                         ui.notifications.info("Vehicle Silhouette Image imported successfully: " + currentCount.toString() + " images");
                         game.settings.set('starwars-silhouette', 'vehicleImagesSilhouetteCount', currentCount);
-                        game.settings.set('starwars-silhouette', 'vehicleSilhouetteImageFolder', serverPath);
+                        //game.settings.set('starwars-silhouette', 'vehicleSilhouetteImageFolder', serverPath);
 
                     }
                 }
