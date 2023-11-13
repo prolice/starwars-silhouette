@@ -28,6 +28,7 @@ to affect it into your actor sheet as the token image and the silhouette as the 
 
 ### Warning
 If you use this module as a "Release Candidate", please be sure that you have made a backup of your world!
+There is v1.0.0+, you can use it more safely but still a backup is not too much to be sure ;-)
 
 ## Installation
 ### Auto install Method (recommended)
