@@ -235,7 +235,7 @@ class swSilouhetteModule {
 async function importImage(path, zip, serverPath) {
     if (path) {
         //const serverPath = `worlds/${game.world.id}/images/packs/${pack.metadata.name}`;
-        //const serverPath = `modules/starwars-silhouette/storage/image/vehicleImages`;
+        //const serverPath = `modules/starwars-silhouette/image/vehicleImages`;
         const filename = path.replace(/^.*[\\\/]/, "");
         if (!CONFIG.temporary.images) {
             CONFIG.temporary.images = [];
@@ -819,7 +819,7 @@ class DataImporter extends FormApplication {
                     const files = Object.values(zip.files).filter((file) => {
                         return !file.dir && file.name.split(".").pop() === "png" && file.name.includes("/VehicleImages/");
                     });
-                    //let serverPath = `modules/starwars-silhouette/storage/image/VehicleImages`;
+                    //let serverPath = `modules/starwars-silhouette/image/VehicleImages`;
                     let serverPath = game.settings.get('starwars-silhouette', 'vehicleImageFolder', );
                     let totalCount = files.length;
                     let currentCount = 0;
@@ -848,7 +848,7 @@ class DataImporter extends FormApplication {
                     const files = Object.values(zip.files).filter((file) => {
                         return !file.dir && file.name.split(".").pop() === "png" && file.name.includes("/VehicleSilhouettes/");
                     });
-                    //let serverPath = `modules/starwars-silhouette/storage/image/VehicleSilhouettes`;
+                    //let serverPath = `modules/starwars-silhouette/image/VehicleSilhouettes`;
                     let serverPath = game.settings.get('starwars-silhouette', 'vehicleSilhouetteImageFolder');
                     let totalCount = files.length;
                     let currentCount = 0;
