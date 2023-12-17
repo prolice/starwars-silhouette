@@ -407,11 +407,17 @@ async function updateImage(imageUrl, actor) {
     });
 }
 
-async function updateItems(data, actor) {
+async function createItems(data, actor) {
     const created = await Item.create(data, {
         parent: actor
     });
     console.log(created);
+}
+
+async function updateItemsImage(imageUrl, item) {
+    await item.update({
+        "img": imageUrl
+    });
 }
 
 async function checkImageExists(url) {
@@ -530,7 +536,7 @@ async function affectShitAttachmentsItemsToVehicle(actors) {
         let existItemActor = actor.items.filter(i => i.name == "VT:" + ffgimportid);
         if (existItemActor.length === 0) {
             const data = item;
-            updateItems(data, actor);
+            createItems(data, actor);
             return;
         }
         console.log(ffgimportid);
@@ -946,15 +952,19 @@ class DataImporter extends FormApplication {
                         if (ffgimportid) {
                             let item = game.items.filter(i => i.name == "VT:" + ffgimportid);
                             let existItemActor = actor.items.filter(i => i.name == "VT:" + ffgimportid);
-                            if (existItemActor.length === 0) {
+                            if (existItemActor.length === 0){
                                 const data = item;
-                                updateItems(data, actor);
+                                createItems(data, actor);
                                 currentCount += 1;
-
-                                $(".AffectShipAttachmentItems .import-progress-bar")
-                                .width(`${Math.trunc((currentCount / totalCount) * 100)}%`)
-                                .html(`<span>${Math.trunc((currentCount / totalCount) * 100)}%</span>`);
                             }
+                            else{
+                                updateItemsImage(item[0].img, existItemActor[0]);
+                                currentCount += 1;
+                            }
+
+                            $(".AffectShipAttachmentItems .import-progress-bar")
+                            .width(`${Math.trunc((currentCount / totalCount) * 100)}%`)
+                            .html(`<span>${Math.trunc((currentCount / totalCount) * 100)}%</span>`);
                         }
 
                         console.log(ffgimportid);
