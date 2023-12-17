@@ -5,7 +5,7 @@
 * **Version**: ![](https://img.shields.io/github/v/release/prolice/starwars-silhouette?color=green&label=SW-Silhouette)
 * **Foundry VTT Compatibility**: ![](https://img.shields.io/badge/Foundry-v10-informational) to ![](https://img.shields.io/badge/Foundry-v11.315-informational)
 
-* **System Compatibility**: ![](https://img.shields.io/badge/Starwarsffg-v1.801-orange) to ![](https://img.shields.io/badge/Starwarsffg-v1.801-orange) 
+* **System Compatibility**: ![](https://img.shields.io/badge/Starwarsffg-v1.801-orange) to ![](https://img.shields.io/badge/Starwarsffg-v1.802-orange) 
 * **Repository size**: ![](https://img.shields.io/github/repo-size/prolice/starwars-silhouette)
 * **Download**: ![Forge installs](https://img.shields.io/badge/dynamic/json?label=Forge%20Installs&query=package.installs&suffix=%25&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Fstarwars-silhouette)
 				![the latest version](https://img.shields.io/github/downloads/prolice/starwars-silhouette/latest/total) 

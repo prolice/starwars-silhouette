@@ -1,5 +1,8 @@
 ## RELEASE NOTES
 
+**Version [1.0.1]
+* Add persistence storage when package is updated
+
 **Version [0.0.4-alpha.1]
 * Fix folder destination parameter
 * Add option to choose silhouette image as vehicle image
