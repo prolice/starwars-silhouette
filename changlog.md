@@ -1,6 +1,6 @@
 ## RELEASE NOTES
 
-**Version [1.0.1]
+**Version [1.1.0-alpha1]
 * Add persistence storage when package is updated
 
 **Version [0.0.4-alpha.1]
