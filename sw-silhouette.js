@@ -135,7 +135,7 @@ class swSilouhetteModule {
             config: true,
             restricted: true,
         });
-        
+
         game.settings.register('starwars-silhouette', 'useSilhouetteAsVehicleImage', {
             name: 'Use silhouette as vehicle image ?',
             hint: 'Do you want to use all the silhouette images from "OggDude importation" as vehicle image ?',
@@ -147,7 +147,7 @@ class swSilouhetteModule {
             config: true,
             restricted: true,
         });
-        
+
         game.settings.register('starwars-silhouette', 'forceParsingVehicleImage', {
             name: 'Do you want to force the vehicle image ?',
             hint: 'Force to reevaluate if vehicle image has an update.',
@@ -159,7 +159,7 @@ class swSilouhetteModule {
             config: true,
             restricted: true,
         });
-        
+
         game.settings.register('starwars-silhouette', 'vehicleSilhouetteImageFolder', {
             name: 'Vehicle Silhoutte Image Folder',
             type: String,
@@ -360,6 +360,8 @@ Hooks.on("ready", async() => {
         game.settings.set('starwars-silhouette', 'folderCreated', false);
         game.settings.set('starwars-silhouette', 'folderId', '');
         game.settings.set('starwars-silhouette', 'folderReset', false);
+        game.settings.set('starwars-silhouette', 'vehicleImageFolder', 'modules/starwars-silhouette/storage/image/VehicleImages');
+        game.settings.set('starwars-silhouette', 'vehicleSilhouetteImageFolder', 'modules/starwars-silhouette/storage/image/VehicleSilhouettes');
 
     }
 });
@@ -446,9 +448,9 @@ async function importImageFromOggImageFolder(actors) {
         if (imageName === 'mystery-man' || imageName === 'shipdefence')
             updateImage(defaultSilhouette, actor);
     });
-    
+
     let folderPath = game.settings.get('starwars-silhouette', 'vehicleImageFolder');
-    if (game.settings.get('starwars-silhouette', 'useSilhouetteAsVehicleImage')){
+    if (game.settings.get('starwars-silhouette', 'useSilhouetteAsVehicleImage')) {
         folderPath = game.settings.get('starwars-silhouette', 'vehicleSilhouetteImageFolder');
     }
 
@@ -461,8 +463,8 @@ async function importImageFromOggImageFolder(actors) {
         let fileName = extractFileName(file);
         let actor = actors.filter(i => i.flags.starwarsffg?.ffgimportid == fileName);
         let imageName = actor[0] ? extractFileName(actor[0].img) : 'shipdefence';
-        
-        if (imageName === 'mystery-man' || imageName === 'shipdefence' || game.settings.get('starwars-silhouette', 'forceParsingVehicleImage')) {    
+
+        if (imageName === 'mystery-man' || imageName === 'shipdefence' || game.settings.get('starwars-silhouette', 'forceParsingVehicleImage')) {
             if (actor) {
                 let imageUrl = actor[0] ? folderPath + `/${actor[0].flags.starwarsffg.ffgimportid}.png` : defaultSilhouette;
                 if (actor[0]) {
@@ -781,7 +783,33 @@ class DataImporter extends FormApplication {
                 console.error(err);
             }
         }
+        if (action === "migrate") {
+            
+            /*DELETE VEHICLE SILHOUETTE FOLDER*/
+            await this.asyncForEach(game.items, async(item) => {
+            //game.items.forEach(item => {
+                if (item.type === "shipattachment" && item.name && item.name.startsWith("VT:"))
+                    item?.delete();
+            });
 
+            let folder = game.folders.get(game.settings.get('starwars-silhouette', 'folderId'));
+            if (folder !== null)
+                folder?.delete();
+            
+            /*RESET THE ENTIRE MODULE*/
+            game.settings.set('starwars-silhouette', 'vehicleImagesCount', 0);
+            game.settings.set('starwars-silhouette', 'vehicleImagesSilhouetteCount', 0);
+            game.settings.set('starwars-silhouette', 'creationShipAttachmentItems', 0);
+            game.settings.set('starwars-silhouette', 'affectShipAttachmentItems', 0);
+            game.settings.set('starwars-silhouette', 'folderCreated', false);
+            game.settings.set('starwars-silhouette', 'folderId', '');
+            game.settings.set('starwars-silhouette', 'folderReset', false);
+            game.settings.set('starwars-silhouette', 'vehicleImageFolder', 'modules/starwars-silhouette/storage/image/VehicleImages');
+            game.settings.set('starwars-silhouette', 'vehicleSilhouetteImageFolder', 'modules/starwars-silhouette/storage/image/VehicleSilhouettes');
+            
+            
+
+        }
         if (action === "import") {
             CONFIG.logger.debug("Importing Data Files");
             this._importLogger(`Starting import`);
@@ -820,7 +848,8 @@ class DataImporter extends FormApplication {
                 }
             }
 
-            await this.asyncForEach(importFiles, async(file) => {
+            //await this.asyncForEach(importFiles, async(file) => {
+            importFiles.forEach(async file => {
                 if (file.file.includes('/VehicleImages')) {
                     const files = Object.values(zip.files).filter((file) => {
                         return !file.dir && file.name.split(".").pop() === "png" && file.name.includes("/VehicleImages/");
@@ -832,7 +861,8 @@ class DataImporter extends FormApplication {
                     if (files.length) {
                         CONFIG.logger.debug(`Starting Oggdude Vehicle Images Import`);
                         $(".import-progress.vehicleImage").toggleClass("import-hidden");
-                        await this.asyncForEach(files, async(file) => {
+                        //await this.asyncForEach(files, async(file) => {
+                        files.forEach(async file => {
                             try {
                                 let myNewFile = importImage(file.name, zip, serverPath);
                                 currentCount += 1;
@@ -862,7 +892,8 @@ class DataImporter extends FormApplication {
                     if (files.length) {
                         CONFIG.logger.debug(`Starting Oggdude Vehicle Silhouettes Images Import`);
                         $(".import-progress.VehicleSilhouettes").toggleClass("import-hidden");
-                        await this.asyncForEach(files, async(file) => {
+                        //await this.asyncForEach(files, async(file) => {
+                        files.forEach(async file => {
                             try {
                                 let myNewFile = importImage(file.name, zip, serverPath);
                                 currentCount += 1;
@@ -952,13 +983,13 @@ class DataImporter extends FormApplication {
                         if (ffgimportid) {
                             let item = game.items.filter(i => i.name == "VT:" + ffgimportid);
                             let existItemActor = actor.items.filter(i => i.name == "VT:" + ffgimportid);
-                            if (existItemActor.length === 0){
+                            if (existItemActor.length >= 1) {
+                                actor.items.delete(existItemActor[0].id, existItemActor[0]);
+                                existItemActor = [];
+                            }
+                            if (existItemActor.length === 0) {
                                 const data = item;
                                 createItems(data, actor);
-                                currentCount += 1;
-                            }
-                            else{
-                                updateItemsImage(item[0].img, existItemActor[0]);
                                 currentCount += 1;
                             }
 
