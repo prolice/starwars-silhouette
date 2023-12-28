@@ -17,6 +17,7 @@
   "flags": {
     "allowBugReporter": true
   },
+  "persistentStorage": true,
   "dependencies": [
     {
       "name": "_mathjs",
