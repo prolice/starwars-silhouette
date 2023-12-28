@@ -1,6 +1,5 @@
 //"use strict";
 //import DataImporter from "importer/data-importer.js";
-
 class swSilouhetteModule {
 
     constructor() {
@@ -163,7 +162,7 @@ class swSilouhetteModule {
         game.settings.register('starwars-silhouette', 'vehicleSilhouetteImageFolder', {
             name: 'Vehicle Silhoutte Image Folder',
             type: String,
-            filePicker: 'folder',
+            //filePicker: 'folder',
         default:
             'modules/starwars-silhouette/storage/image/VehicleSilhouettes',
             config: true,
@@ -173,7 +172,7 @@ class swSilouhetteModule {
         game.settings.register('starwars-silhouette', 'vehicleImageFolder', {
             name: 'Vehicle Image Folder',
             type: String,
-            filePicker: 'folder',
+            //filePicker: 'folder',
         default:
             'modules/starwars-silhouette/storage/image/VehicleImages',
             config: true,
@@ -221,6 +220,17 @@ class swSilouhetteModule {
             },
         });
 
+        /*game.settings.register('starwars-silhouette', 'testfolderpick', {
+            name: 'TEST FOLDER PICK/CREATE',
+            hint: '',
+            scope: "world",
+            config: true,
+        default:
+            'modules/starwars-silhouette/storage/image/VehicleSilhouettes',
+            type: String,
+            //filePicker: true,
+            requiresReload: false
+        });*/
         //importImage('Data/VehicleSilhouettes',''
     }
 }
@@ -236,6 +246,7 @@ async function importImage(path, zip, serverPath) {
     if (path) {
         //const serverPath = `worlds/${game.world.id}/images/packs/${pack.metadata.name}`;
         //const serverPath = `modules/starwars-silhouette/image/vehicleImages`;
+
         const filename = path.replace(/^.*[\\\/]/, "");
         if (!CONFIG.temporary.images) {
             CONFIG.temporary.images = [];
@@ -319,6 +330,104 @@ async function UploadFile(source, path, file, options) {
         return ui.notifications.error(game.i18n.localize("FILES.ErrorSomethingWrong"));
     }
 }
+
+Hooks.on("renderSettingsConfig", (app, html, data) => {
+
+    let fileInput = $('input[name="starwars-silhouette.vehicleSilhouetteImageFolder"]', html).css({
+        'flex-basis': 'unset',
+        'flex-grow': 1
+    });
+
+    // Create a button for browsing files
+    let browseBtn = $('<button>')
+        .addClass('file')
+        .attr('type', 'button') // Change type to 'button' to prevent form submission
+        .attr('data-type', "folder")
+        .attr('data-target', "img")
+        .attr('title', "Select Folder")
+        .attr('tabindex', "-1")
+        .html('<i class="fas fa-file-import fa-fw"></i>')
+        .click(function (event) {
+            const fp = new FilePicker({
+                type: "folder",
+                current: fileInput.val(),
+                callback: path => {
+                    fileInput.val(path);
+                }
+            });
+            return fp.browse();
+        });
+
+    // Create a button for creating a directory
+    let createDirBtn = $('<button>')
+        .addClass('create-directory')
+        .attr('type', 'button') // Change type to 'button' to prevent form submission
+        .attr('title', 'Create Directory')
+        .attr('tabindex', '-1')
+        .html('<i class="fas fa-folder-plus fa-fw"></i>')
+        .click(function (event) {
+            const fp = new FilePicker({
+                type: 'image',
+                current: fileInput.val(),
+                callback: path => {
+                    fileInput.val(path);
+                }
+            });
+            return fp.browse();
+        });
+
+    // Insert the buttons after the file input
+    browseBtn.clone(true).insertAfter(fileInput);
+    createDirBtn.clone(true).insertAfter(fileInput);
+    
+    let fileInputImage = $('input[name="starwars-silhouette.vehicleImageFolder"]', html).css({
+        'flex-basis': 'unset',
+        'flex-grow': 1
+    });
+
+    // Create a button for browsing files
+    let browseBtnImage = $('<button>')
+        .addClass('file')
+        .attr('type', 'button') // Change type to 'button' to prevent form submission
+        .attr('data-type', "folder")
+        .attr('data-target', "img")
+        .attr('title', "Select Folder")
+        .attr('tabindex', "-1")
+        .html('<i class="fas fa-file-import fa-fw"></i>')
+        .click(function (event) {
+            const fp = new FilePicker({
+                type: "folder",
+                current: fileInputImage.val(),
+                callback: path => {
+                    fileInputImage.val(path);
+                }
+            });
+            return fp.browse();
+        });
+
+    // Create a button for creating a directory
+    let createDirBtnImage = $('<button>')
+        .addClass('create-directory')
+        .attr('type', 'button') // Change type to 'button' to prevent form submission
+        .attr('title', 'Create Directory')
+        .attr('tabindex', '-1')
+        .html('<i class="fas fa-folder-plus fa-fw"></i>')
+        .click(function (event) {
+            const fp = new FilePicker({
+                type: 'image',
+                current: fileInputImage.val(),
+                callback: path => {
+                    fileInputImage.val(path);
+                }
+            });
+            return fp.browse();
+        });
+
+    // Insert the buttons after the file input
+    browseBtnImage.clone(true).insertAfter(fileInputImage);
+    createDirBtnImage.clone(true).insertAfter(fileInputImage);
+    
+});
 
 Hooks.once("init", async function () {
     // TURN ON OR OFF HOOK DEBUGGING
@@ -442,7 +551,8 @@ async function createFolder(_name, _type) {
 }
 async function importImageFromOggImageFolder(actors) {
 
-    let defaultSilhouette = `modules/starwars-silhouette/storage/image/shipdefence.png`;
+    let defaultSilhouette = `modules/starwars-silhouette/storage/image/shipdefence.webp`;
+    //let defaultSilhouette = `modules/star-wars-all-compendia/assets/images/packs/shipdefence.webp`;
     actors.forEach(actor => {
         let imageName = extractFileName(actor.img);
         if (imageName === 'mystery-man' || imageName === 'shipdefence')
@@ -784,18 +894,18 @@ class DataImporter extends FormApplication {
             }
         }
         if (action === "migrate") {
-            
+
             /*DELETE VEHICLE SILHOUETTE FOLDER*/
             await this.asyncForEach(game.items, async(item) => {
-            //game.items.forEach(item => {
+                //game.items.forEach(item => {
                 if (item.type === "shipattachment" && item.name && item.name.startsWith("VT:"))
-                    item?.delete();
+                    item?.delete ();
             });
 
             let folder = game.folders.get(game.settings.get('starwars-silhouette', 'folderId'));
             if (folder !== null)
-                folder?.delete();
-            
+                folder?.delete ();
+
             /*RESET THE ENTIRE MODULE*/
             game.settings.set('starwars-silhouette', 'vehicleImagesCount', 0);
             game.settings.set('starwars-silhouette', 'vehicleImagesSilhouetteCount', 0);
@@ -806,8 +916,33 @@ class DataImporter extends FormApplication {
             game.settings.set('starwars-silhouette', 'folderReset', false);
             game.settings.set('starwars-silhouette', 'vehicleImageFolder', 'modules/starwars-silhouette/storage/image/VehicleImages');
             game.settings.set('starwars-silhouette', 'vehicleSilhouetteImageFolder', 'modules/starwars-silhouette/storage/image/VehicleSilhouettes');
-            
-            
+
+            /*let items = game.items.filter(i => i.type === 'species');
+            CONFIG.logger.debug(`Starting affect images on new module assets images pack`);
+            $(".import-progress.AffectShipAttachmentItems").toggleClass("import-hidden");
+            let moduleDefaultAssetsFolder = 'modules/star-wars-all-compendia/assets/images/packs';
+            let totalCount = items.length;
+            let currentCount = 0;
+
+            await this.asyncForEach(items, async(item) => {
+            let ffgimportid = item.flags.starwarsffg?.ffgimportid;
+            let itemImg = item.img;
+            let imageName = extractFileName(itemImg);
+
+            if (imageName === 'Gear' + ffgimportid){
+            //updateItemsImage(moduleDefaultAssetsFolder + "/icons/svg/"+ imageName + '.svg', item);
+            updateItemsImage(moduleDefaultAssetsFolder + "/species/"+ imageName + '.webp', item);
+            }
+
+            currentCount += 1;
+
+            $(".AffectShipAttachmentItems .import-progress-bar")
+            .width(`${Math.trunc((currentCount / totalCount) * 100)}%`)
+            .html(`<span>${Math.trunc((currentCount / totalCount) * 100)}%</span>`);
+
+
+            console.log(ffgimportid);
+            });*/
 
         }
         if (action === "import") {
