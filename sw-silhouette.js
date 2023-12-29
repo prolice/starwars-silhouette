@@ -1222,7 +1222,8 @@ class DataImporter extends FormApplication {
                             let existItemActor = actor.items.filter(i => i.name == "VT:" + ffgimportid);
                             if (existItemActor.length >= 1) {
                                 existItemActor.forEach(existItem => {
-                                    actor.items.delete(existItem.id, existItem);
+                                    //actor.items.delete(existItem.id, actor);
+                                    actor.deleteEmbeddedDocuments('Item', [existItem.id]);
                                 });
                                 existItemActor = [];
 
@@ -1232,7 +1233,9 @@ class DataImporter extends FormApplication {
                                 const itemCreateAffectationId = await createItems(data, actor);
                                 currentCount += 1;
                             }
-
+                            
+                            const resultActor = actor.update();
+                            
                             $(".AffectShipAttachmentItems .import-progress-bar")
                             .width(`${Math.trunc((currentCount / totalCount) * 100)}%`)
                             .html(`<span>${Math.trunc((currentCount / totalCount) * 100)}%</span>`);
