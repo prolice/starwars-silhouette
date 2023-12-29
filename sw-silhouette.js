@@ -541,6 +541,12 @@ async function updateItemsImage(imageUrl, item) {
     });
 }
 
+async function deleteItem (item) {
+    let itemId = item.id;
+    await item?.delete();
+    return itemId;
+}
+
 async function checkImageExists(url) {
     return new Promise(resolve => {
         let img = new Image();
@@ -926,14 +932,30 @@ class DataImporter extends FormApplication {
 
             /*DELETE VEHICLE SILHOUETTE FOLDER*/
             //await this.asyncForEach(game.items, async(item) => {
-            game.items.forEach(item => {
-                if (item.type === "shipattachment" && item.name && item.name.startsWith("VT:"))
-                    item?.delete ();
+            let items = game.items.filter(i => i.type === 'shipattachment');
+            let itemCount = items.size;
+            let processedItem = 0;
+            let deletedItem = 0;
+            //game.items.forEach(item => {
+            
+            await this.asyncForEach(items, async(item) => {
+                SceneNavigation.displayProgressBar({label: "Delete silhouette items ",pct: Math.floor((itemCount/processedItem)*100)});
+                if (item.type === "shipattachment" && item.name && item.name.startsWith("VT:")){
+                    let deletedItem = await deleteItem(item);//item?.delete();
+                    deletedItem += 1;
+                }
+                processedItem += 1;
             });
-
+            
+            SceneNavigation.displayProgressBar({label: "Delete silhouette items ",pct: 100});
+            ui.notifications.info("Silhouette item deleted count: " + deletedItem.toString() + " items");
             let folder = game.folders.get(game.settings.get('starwars-silhouette', 'folderId'));
-            if (folder !== null)
-                folder?.delete ();
+            let folderName;
+            if (folder !== null || folder !== undefined){
+                folderName = folder?.name;
+                folder?.delete();
+                ui.notifications.info("Folder "+folderName+" deleted successfully");
+            }
 
             /*RESET THE ENTIRE MODULE*/
             game.settings.set('starwars-silhouette', 'vehicleImagesCount', 0);
