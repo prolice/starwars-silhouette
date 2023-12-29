@@ -221,19 +221,25 @@ class swSilouhetteModule {
         });
 
         /*game.settings.register('starwars-silhouette', 'testfolderpick', {
-            name: 'TEST FOLDER PICK/CREATE',
-            hint: '',
-            scope: "world",
-            config: true,
+        name: 'TEST FOLDER PICK/CREATE',
+        hint: '',
+        scope: "world",
+        config: true,
         default:
-            'modules/starwars-silhouette/storage/image/VehicleSilhouettes',
-            type: String,
-            //filePicker: true,
-            requiresReload: false
+        'modules/starwars-silhouette/storage/image/VehicleSilhouettes',
+        type: String,
+        //filePicker: true,
+        requiresReload: false
         });*/
         //importImage('Data/VehicleSilhouettes',''
     }
 }
+
+asyncForEach = async(array, callback) => {
+    for (let index = 0; index < array.length; index += 1) {
+        await callback(array[index], index, array);
+    }
+};
 
 /**
  * Imports binary file, by extracting from zip file and uploading to path.
@@ -362,24 +368,24 @@ Hooks.on("renderSettingsConfig", (app, html, data) => {
     let createDirBtn = $('<button>')
         .addClass('create-directory')
         .attr('type', 'button') // Change type to 'button' to prevent form submission
-        .attr('title', 'Create Directory')
+        .attr('title', 'Create a sub directory')
         .attr('tabindex', '-1')
         .html('<i class="fas fa-folder-plus fa-fw"></i>')
         .click(function (event) {
             const fp = new FilePicker({
-                type: 'image',
+                type: 'folder',
                 current: fileInput.val(),
                 callback: path => {
                     fileInput.val(path);
                 }
             });
-            return fp.browse();
+            return fp._createDirectoryDialog(fp.sources.data)
         });
 
     // Insert the buttons after the file input
     browseBtn.clone(true).insertAfter(fileInput);
     createDirBtn.clone(true).insertAfter(fileInput);
-    
+
     let fileInputImage = $('input[name="starwars-silhouette.vehicleImageFolder"]', html).css({
         'flex-basis': 'unset',
         'flex-grow': 1
@@ -409,24 +415,24 @@ Hooks.on("renderSettingsConfig", (app, html, data) => {
     let createDirBtnImage = $('<button>')
         .addClass('create-directory')
         .attr('type', 'button') // Change type to 'button' to prevent form submission
-        .attr('title', 'Create Directory')
+        .attr('title', 'Create a sub directory')
         .attr('tabindex', '-1')
         .html('<i class="fas fa-folder-plus fa-fw"></i>')
         .click(function (event) {
             const fp = new FilePicker({
-                type: 'image',
+                type: 'folder',
                 current: fileInputImage.val(),
                 callback: path => {
                     fileInputImage.val(path);
                 }
             });
-            return fp.browse();
+            return fp._createDirectoryDialog(fp.sources.data)
         });
 
     // Insert the buttons after the file input
     browseBtnImage.clone(true).insertAfter(fileInputImage);
     createDirBtnImage.clone(true).insertAfter(fileInputImage);
-    
+
 });
 
 Hooks.once("init", async function () {
@@ -457,7 +463,9 @@ Hooks.on("ready", async() => {
         await changeScaleOnSilhouette(actors);
 
         if (game.settings.get('starwars-silhouette', 'autoChangeVehicleImage')) {
-            await importImageFromOggImageFolder(actors);
+            //SceneNavigation.displayProgressBar({label: "Test Progress Bar",pct: 45});
+            let currentAffectedCount = await importImageFromOggImageFolder(actors);
+            ui.notifications.info("Number of vehicle with a new image: " + currentAffectedCount.toString() + " / "+ actors.length + " vehicles");
         }
     }
 
@@ -516,6 +524,7 @@ async function updateImage(imageUrl, actor) {
         "img": imageUrl,
         "prototypeToken.texture.src": imageUrl
     });
+    return actor.id;
 }
 
 async function createItems(data, actor) {
@@ -523,6 +532,7 @@ async function createItems(data, actor) {
         parent: actor
     });
     console.log(created);
+    return created.id;
 }
 
 async function updateItemsImage(imageUrl, item) {
@@ -553,11 +563,21 @@ async function importImageFromOggImageFolder(actors) {
 
     let defaultSilhouette = `modules/starwars-silhouette/storage/image/shipdefence.webp`;
     //let defaultSilhouette = `modules/star-wars-all-compendia/assets/images/packs/shipdefence.webp`;
-    actors.forEach(actor => {
+    //actors.forEach(actor => {
+    let defaultImageToVehicleCount = 0;
+    let actorCount = actors.length;
+    
+    await this.asyncForEach(actors, async(actor) => {
         let imageName = extractFileName(actor.img);
-        if (imageName === 'mystery-man' || imageName === 'shipdefence')
-            updateImage(defaultSilhouette, actor);
+        SceneNavigation.displayProgressBar({label: "Default Images to vehicles ",pct: Math.floor((defaultImageToVehicleCount/actorCount)*100)});
+        defaultImageToVehicleCount+=1;
+        if (imageName === 'mystery-man' || imageName === 'shipdefence') {
+            let defaultImage = await updateImage(defaultSilhouette, actor);
+            console.log("Default image:" + defaultSilhouette + " in " + defaultImage);
+        }
     });
+    
+    SceneNavigation.displayProgressBar({label: "Default Images to vehicles",pct: 100});
 
     let folderPath = game.settings.get('starwars-silhouette', 'vehicleImageFolder');
     if (game.settings.get('starwars-silhouette', 'useSilhouetteAsVehicleImage')) {
@@ -568,21 +588,30 @@ async function importImageFromOggImageFolder(actors) {
         files
     } = await FilePicker.browse("data", folderPath);
 
-    files.forEach(async file => {
+    let currentAffectedCount = 0;
+    let currentTreatedFileCount = 0;
+    let maxAffectable = files.length;
+    //files.forEach(async file => {
+    await this.asyncForEach(files, async(file) => {
         // Extract the name without path and extension
         let fileName = extractFileName(file);
         let actor = actors.filter(i => i.flags.starwarsffg?.ffgimportid == fileName);
         let imageName = actor[0] ? extractFileName(actor[0].img) : 'shipdefence';
-
+        SceneNavigation.displayProgressBar({label: "Affected Images to vehicles",pct: Math.floor((currentTreatedFileCount/maxAffectable)*100)});
+        currentTreatedFileCount+=1;
         if (imageName === 'mystery-man' || imageName === 'shipdefence' || game.settings.get('starwars-silhouette', 'forceParsingVehicleImage')) {
             if (actor) {
                 let imageUrl = actor[0] ? folderPath + `/${actor[0].flags.starwarsffg.ffgimportid}.png` : defaultSilhouette;
                 if (actor[0]) {
-                    updateImage(imageUrl, actor[0]);
+                    let actorId = await updateImage(imageUrl, actor[0]);
+                    currentAffectedCount += 1;
+                    console.log("affected image:" + imageUrl + "in " + actorId);
                 }
             }
         }
     });
+    SceneNavigation.displayProgressBar({label: "Affected Images to vehicles",pct: 100});
+    return currentAffectedCount;
 }
 
 async function changeScaleOnSilhouette(actors) {
@@ -896,8 +925,8 @@ class DataImporter extends FormApplication {
         if (action === "migrate") {
 
             /*DELETE VEHICLE SILHOUETTE FOLDER*/
-            await this.asyncForEach(game.items, async(item) => {
-                //game.items.forEach(item => {
+            //await this.asyncForEach(game.items, async(item) => {
+            game.items.forEach(item => {
                 if (item.type === "shipattachment" && item.name && item.name.startsWith("VT:"))
                     item?.delete ();
             });
@@ -996,10 +1025,10 @@ class DataImporter extends FormApplication {
                     if (files.length) {
                         CONFIG.logger.debug(`Starting Oggdude Vehicle Images Import`);
                         $(".import-progress.vehicleImage").toggleClass("import-hidden");
-                        //await this.asyncForEach(files, async(file) => {
-                        files.forEach(async file => {
+                        await this.asyncForEach(files, async(file) => {
+                            //files.forEach(async file => {
                             try {
-                                let myNewFile = importImage(file.name, zip, serverPath);
+                                let myNewFile = await importImage(file.name, zip, serverPath);
                                 currentCount += 1;
 
                                 $(".vehicleImage .import-progress-bar")
@@ -1027,10 +1056,10 @@ class DataImporter extends FormApplication {
                     if (files.length) {
                         CONFIG.logger.debug(`Starting Oggdude Vehicle Silhouettes Images Import`);
                         $(".import-progress.VehicleSilhouettes").toggleClass("import-hidden");
-                        //await this.asyncForEach(files, async(file) => {
-                        files.forEach(async file => {
+                        await this.asyncForEach(files, async(file) => {
+                            //files.forEach(async file => {
                             try {
-                                let myNewFile = importImage(file.name, zip, serverPath);
+                                let myNewFile = await importImage(file.name, zip, serverPath);
                                 currentCount += 1;
 
                                 $(".VehicleSilhouettes .import-progress-bar")
@@ -1052,7 +1081,6 @@ class DataImporter extends FormApplication {
             });
 
             CONFIG.temporary = {};
-            this.close();
         }
         if (action === "creation") {
             const itemCreation = $("input:checkbox[name=creation]:checked")
@@ -1124,7 +1152,7 @@ class DataImporter extends FormApplication {
                             }
                             if (existItemActor.length === 0) {
                                 const data = item;
-                                createItems(data, actor);
+                                const itemCreateAffectationId = await createItems(data, actor);
                                 currentCount += 1;
                             }
 
@@ -1145,7 +1173,6 @@ class DataImporter extends FormApplication {
                 }
 
             });
-            this.close();
         }
     }
 
