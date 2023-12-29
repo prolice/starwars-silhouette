@@ -262,19 +262,53 @@ async function importImage(path, zip, serverPath) {
                 CONFIG.temporary.images.push(`${serverPath}/${filename}`);
                 //await verifyPath("data", serverPath);
                 const img = await zip.file(path).async("uint8array");
+                //const imgFile = await zip.file(path);
                 var arr = img.subarray(0, 4);
                 var header = "";
                 for (var a = 0; a < arr.length; a++) {
                     header += arr[a].toString(16);
                 }
                 const type = getMimeType(header);
-
+  
                 const i = new File([img], filename, {
                     type
                 });
-                await UploadFile("data", `${serverPath}`, i, {
+                
+                const imageWebp = new Image();
+                if (!i) {
+                    console.log(i);
+                    return;
+                }
+                
+                imageWebp.name = extractFileName(i.name) + '.webp';
+                imageWebp.onload = () => {
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = imageWebp.naturalWidth;
+                    canvas.height = imageWebp.naturalHeight;
+                    canvas.getContext('2d').drawImage(imageWebp, 0, 0);
+                    canvas.toBlob((blob) => {
+
+                        // Now we have a `blob` containing webp data
+
+                        // Use the file rename trick to turn it back into a file
+                        const myImage = new File([blob], imageWebp.name, {
+                            type: blob.type
+                        });
+                        
+                        UploadFile("data", `${serverPath}`, myImage, {
+                            bucket: null
+                        });
+
+                    }, 'image/webp');
+
+                };
+                
+                imageWebp.src = URL.createObjectURL(i);
+                
+                /*await UploadFile("data", `${serverPath}`, i, {
                     bucket: null
-                });
+                });*/
             }
 
             return `${serverPath}/${filename}`;
@@ -465,7 +499,7 @@ Hooks.on("ready", async() => {
         if (game.settings.get('starwars-silhouette', 'autoChangeVehicleImage')) {
             //SceneNavigation.displayProgressBar({label: "Test Progress Bar",pct: 45});
             let currentAffectedCount = await importImageFromOggImageFolder(actors);
-            ui.notifications.info("Number of vehicle with a new image: " + currentAffectedCount.toString() + " / "+ actors.length + " vehicles");
+            ui.notifications.info("Number of vehicle with a new image: " + currentAffectedCount.toString() + " / " + actors.length + " vehicles");
         }
     }
 
@@ -541,9 +575,9 @@ async function updateItemsImage(imageUrl, item) {
     });
 }
 
-async function deleteItem (item) {
+async function deleteItem(item) {
     let itemId = item.id;
-    await item?.delete();
+    await item?.delete ();
     return itemId;
 }
 
@@ -572,18 +606,24 @@ async function importImageFromOggImageFolder(actors) {
     //actors.forEach(actor => {
     let defaultImageToVehicleCount = 0;
     let actorCount = actors.length;
-    
+
     await this.asyncForEach(actors, async(actor) => {
         let imageName = extractFileName(actor.img);
-        SceneNavigation.displayProgressBar({label: "Default Images to vehicles ",pct: Math.floor((defaultImageToVehicleCount/actorCount)*100)});
-        defaultImageToVehicleCount+=1;
+        SceneNavigation.displayProgressBar({
+            label: "Default Images to vehicles ",
+            pct: Math.floor((defaultImageToVehicleCount / actorCount) * 100)
+        });
+        defaultImageToVehicleCount += 1;
         if (imageName === 'mystery-man' || imageName === 'shipdefence') {
             let defaultImage = await updateImage(defaultSilhouette, actor);
             console.log("Default image:" + defaultSilhouette + " in " + defaultImage);
         }
     });
-    
-    SceneNavigation.displayProgressBar({label: "Default Images to vehicles",pct: 100});
+
+    SceneNavigation.displayProgressBar({
+        label: "Default Images to vehicles",
+        pct: 100
+    });
 
     let folderPath = game.settings.get('starwars-silhouette', 'vehicleImageFolder');
     if (game.settings.get('starwars-silhouette', 'useSilhouetteAsVehicleImage')) {
@@ -603,11 +643,14 @@ async function importImageFromOggImageFolder(actors) {
         let fileName = extractFileName(file);
         let actor = actors.filter(i => i.flags.starwarsffg?.ffgimportid == fileName);
         let imageName = actor[0] ? extractFileName(actor[0].img) : 'shipdefence';
-        SceneNavigation.displayProgressBar({label: "Affected Images to vehicles",pct: Math.floor((currentTreatedFileCount/maxAffectable)*100)});
-        currentTreatedFileCount+=1;
+        SceneNavigation.displayProgressBar({
+            label: "Affected Images to vehicles",
+            pct: Math.floor((currentTreatedFileCount / maxAffectable) * 100)
+        });
+        currentTreatedFileCount += 1;
         if (imageName === 'mystery-man' || imageName === 'shipdefence' || game.settings.get('starwars-silhouette', 'forceParsingVehicleImage')) {
             if (actor) {
-                let imageUrl = actor[0] ? folderPath + `/${actor[0].flags.starwarsffg.ffgimportid}.png` : defaultSilhouette;
+                let imageUrl = actor[0] ? folderPath + `/${actor[0].flags.starwarsffg.ffgimportid}.webp` : defaultSilhouette;
                 if (actor[0]) {
                     let actorId = await updateImage(imageUrl, actor[0]);
                     currentAffectedCount += 1;
@@ -616,7 +659,10 @@ async function importImageFromOggImageFolder(actors) {
             }
         }
     });
-    SceneNavigation.displayProgressBar({label: "Affected Images to vehicles",pct: 100});
+    SceneNavigation.displayProgressBar({
+        label: "Affected Images to vehicles",
+        pct: 100
+    });
     return currentAffectedCount;
 }
 
@@ -829,7 +875,7 @@ class DataImporter extends FormApplication {
 
         let dataImage = await FilePicker.browse("data", folderPath, {
             bucket: null,
-            extensions: [".png", ".PNG"],
+            extensions: [".webp", ".WEBP"],
             wildcard: false
         });
         let vehicleImagesUploadedCount = dataImage.files.length;
@@ -838,7 +884,7 @@ class DataImporter extends FormApplication {
 
         let dataSilhouetteImage = await FilePicker.browse("data", folderPath, {
             bucket: null,
-            extensions: [".png", ".PNG"],
+            extensions: [".webp", ".WEBP"],
             wildcard: false
         });
         let vehicleImagesSilhouetteUploadedCount = dataSilhouetteImage.files.length;
@@ -937,24 +983,30 @@ class DataImporter extends FormApplication {
             let processedItem = 0;
             let deletedItemCount = 0;
             //game.items.forEach(item => {
-            
+
             await this.asyncForEach(items, async(item) => {
-                SceneNavigation.displayProgressBar({label: "Delete silhouette items ",pct: Math.floor((processedItem/itemCount)*100)});
-                if (item.type === "shipattachment" && item.name && item.name.startsWith("VT:")){
+                SceneNavigation.displayProgressBar({
+                    label: "Delete silhouette items ",
+                    pct: Math.floor((processedItem / itemCount) * 100)
+                });
+                if (item.type === "shipattachment" && item.name && item.name.startsWith("VT:")) {
                     deletedItemCount += 1;
-                    let deletedItem = await deleteItem(item);//item?.delete();
+                    let deletedItem = await deleteItem(item); //item?.delete();
                 }
                 processedItem += 1;
             });
-            
-            SceneNavigation.displayProgressBar({label: "Delete silhouette items ",pct: 100});
+
+            SceneNavigation.displayProgressBar({
+                label: "Delete silhouette items ",
+                pct: 100
+            });
             ui.notifications.info("Silhouette item deleted count: " + deletedItemCount.toString() + " items");
             let folder = game.folders.get(game.settings.get('starwars-silhouette', 'folderId'));
             let folderName;
-            if (folder !== null || folder !== undefined){
+            if (folder !== null || folder !== undefined) {
                 folderName = folder?.name;
-                folder?.delete();
-                ui.notifications.info("Folder "+folderName+" deleted successfully");
+                folder?.delete ();
+                ui.notifications.info("Folder " + folderName + " deleted successfully");
             }
 
             /*RESET THE ENTIRE MODULE*/
@@ -1173,7 +1225,7 @@ class DataImporter extends FormApplication {
                                     actor.items.delete(existItem.id, existItem);
                                 });
                                 existItemActor = [];
-                                
+
                             }
                             if (existItemActor.length === 0) {
                                 const data = item;
