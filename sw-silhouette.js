@@ -933,22 +933,22 @@ class DataImporter extends FormApplication {
             /*DELETE VEHICLE SILHOUETTE FOLDER*/
             //await this.asyncForEach(game.items, async(item) => {
             let items = game.items.filter(i => i.type === 'shipattachment');
-            let itemCount = items.size;
+            let itemCount = items.length;
             let processedItem = 0;
-            let deletedItem = 0;
+            let deletedItemCount = 0;
             //game.items.forEach(item => {
             
             await this.asyncForEach(items, async(item) => {
-                SceneNavigation.displayProgressBar({label: "Delete silhouette items ",pct: Math.floor((itemCount/processedItem)*100)});
+                SceneNavigation.displayProgressBar({label: "Delete silhouette items ",pct: Math.floor((processedItem/itemCount)*100)});
                 if (item.type === "shipattachment" && item.name && item.name.startsWith("VT:")){
+                    deletedItemCount += 1;
                     let deletedItem = await deleteItem(item);//item?.delete();
-                    deletedItem += 1;
                 }
                 processedItem += 1;
             });
             
             SceneNavigation.displayProgressBar({label: "Delete silhouette items ",pct: 100});
-            ui.notifications.info("Silhouette item deleted count: " + deletedItem.toString() + " items");
+            ui.notifications.info("Silhouette item deleted count: " + deletedItemCount.toString() + " items");
             let folder = game.folders.get(game.settings.get('starwars-silhouette', 'folderId'));
             let folderName;
             if (folder !== null || folder !== undefined){
@@ -1169,8 +1169,11 @@ class DataImporter extends FormApplication {
                             let item = game.items.filter(i => i.name == "VT:" + ffgimportid);
                             let existItemActor = actor.items.filter(i => i.name == "VT:" + ffgimportid);
                             if (existItemActor.length >= 1) {
-                                actor.items.delete(existItemActor[0].id, existItemActor[0]);
+                                existItemActor.forEach(existItem => {
+                                    actor.items.delete(existItem.id, existItem);
+                                });
                                 existItemActor = [];
+                                
                             }
                             if (existItemActor.length === 0) {
                                 const data = item;
