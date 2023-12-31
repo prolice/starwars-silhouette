@@ -10,6 +10,7 @@ class swSilouhetteModule {
         this.ID = randomID(24);
     }
 
+
     log(msg, ...args) {
         if (game && game.settings.get("starwars-silhouette", "verboseLogs")) {
             const color = "background: #6699ff; color: #000; font-size: larger;";
@@ -160,7 +161,7 @@ class swSilouhetteModule {
         });
 
         game.settings.register('starwars-silhouette', 'vehicleSilhouetteImageFolder', {
-            name: 'Vehicle Silhoutte Image Folder',
+            name: 'Vehicle Silhouette Image Folder',
             type: String,
             //filePicker: 'folder',
         default:
@@ -220,18 +221,6 @@ class swSilouhetteModule {
             },
         });
 
-        /*game.settings.register('starwars-silhouette', 'testfolderpick', {
-        name: 'TEST FOLDER PICK/CREATE',
-        hint: '',
-        scope: "world",
-        config: true,
-        default:
-        'modules/starwars-silhouette/storage/image/VehicleSilhouettes',
-        type: String,
-        //filePicker: true,
-        requiresReload: false
-        });*/
-        //importImage('Data/VehicleSilhouettes',''
     }
 }
 
@@ -249,74 +238,86 @@ asyncForEach = async(array, callback) => {
  * @returns {string} - Path to file within VTT
  */
 async function importImage(path, zip, serverPath) {
-    if (path) {
-        //const serverPath = `worlds/${game.world.id}/images/packs/${pack.metadata.name}`;
-        //const serverPath = `modules/starwars-silhouette/image/vehicleImages`;
+    if (!path) return;
 
-        const filename = path.replace(/^.*[\\\/]/, "");
-        if (!CONFIG.temporary.images) {
-            CONFIG.temporary.images = [];
+    const filename = getFileNameFromPath(path);
+    if (!CONFIG.temporary.images) {
+        CONFIG.temporary.images = [];
+    }
+
+    try {
+        const imagePath = `${serverPath}/${filename}`;
+        if (!CONFIG.temporary.images.includes(imagePath)) {
+            CONFIG.temporary.images.push(imagePath);
+
+            const img = await getImageFromZip(zip, path);
+            const type = getImageType(img);
+
+            const file = createFileFromImage(img, filename, type);
+
+            const imageWebp = await convertToWebp(file);
+
+            await uploadImageToServer(imageWebp, serverPath);
+
+            return imagePath;
         }
-        try {
-            if (!CONFIG.temporary.images.includes(`${serverPath}/${filename}`)) {
-                CONFIG.temporary.images.push(`${serverPath}/${filename}`);
-                //await verifyPath("data", serverPath);
-                const img = await zip.file(path).async("uint8array");
-                //const imgFile = await zip.file(path);
-                var arr = img.subarray(0, 4);
-                var header = "";
-                for (var a = 0; a < arr.length; a++) {
-                    header += arr[a].toString(16);
-                }
-                const type = getMimeType(header);
-  
-                const i = new File([img], filename, {
-                    type
-                });
-                
-                const imageWebp = new Image();
-                if (!i) {
-                    console.log(i);
-                    return;
-                }
-                
-                imageWebp.name = extractFileName(i.name) + '.webp';
-                imageWebp.onload = () => {
-
-                    const canvas = document.createElement('canvas');
-                    canvas.width = imageWebp.naturalWidth;
-                    canvas.height = imageWebp.naturalHeight;
-                    canvas.getContext('2d').drawImage(imageWebp, 0, 0);
-                    canvas.toBlob((blob) => {
-
-                        // Now we have a `blob` containing webp data
-
-                        // Use the file rename trick to turn it back into a file
-                        const myImage = new File([blob], imageWebp.name, {
-                            type: blob.type
-                        });
-                        
-                        UploadFile("data", `${serverPath}`, myImage, {
-                            bucket: null
-                        });
-
-                    }, 'image/webp');
-
-                };
-                
-                imageWebp.src = URL.createObjectURL(i);
-                
-                /*await UploadFile("data", `${serverPath}`, i, {
-                    bucket: null
-                });*/
-            }
-
-            return `${serverPath}/${filename}`;
-        } catch (err) {
-            CONFIG.logger.error(`Error Uploading File: ${path} to ${serverPath}`);
-        }
+    } catch (err) {
+        CONFIG.logger.error(`Error Uploading File: ${path} to ${serverPath}`);
     }
 }
+
+function getHeaderFromImage(byteArray) {
+    let header = "";
+    for (let i = 0; i < byteArray.length; i++) {
+        header += byteArray[i].toString(16).padStart(2, '0');
+    }
+    return header;
+}
+
+function getFileNameFromPath(path) {
+    return path.replace(/^.*[\\\/]/, "");
+}
+
+async function getImageFromZip(zip, path) {
+    return await zip.file(path).async("uint8array");
+}
+
+function getImageType(img) {
+    const header = getHeaderFromImage(img.subarray(0, 4));
+    return getMimeType(header);
+}
+
+function createFileFromImage(img, filename, type) {
+    return new File([img], filename, { type });
+}
+
+async function convertToWebp(file) {
+    return new Promise((resolve) => {
+        const imageWebp = new Image();
+        imageWebp.name = extractFileName(file.name) + '.webp';
+        imageWebp.onload = () => {
+            const canvas = createCanvasFromImage(imageWebp);
+            canvas.toBlob((blob) => {
+                const webpFile = new File([blob], imageWebp.name, { type: blob.type });
+                resolve(webpFile);
+            }, 'image/webp');
+        };
+        imageWebp.src = URL.createObjectURL(file);
+    });
+}
+
+function createCanvasFromImage(image) {
+    const canvas = document.createElement('canvas');
+    canvas.width = image.naturalWidth;
+    canvas.height = image.naturalHeight;
+    canvas.getContext('2d').drawImage(image, 0, 0);
+    return canvas;
+}
+
+async function uploadImageToServer(image, serverPath) {
+    await UploadFile("data", serverPath, image, { bucket: null });
+}
+
 
 async function ForgeUploadFile(source, path, file, options) {
     const fd = new FormData();
@@ -610,7 +611,7 @@ async function importImageFromOggImageFolder(actors) {
     await this.asyncForEach(actors, async(actor) => {
         let imageName = extractFileName(actor.img);
         SceneNavigation.displayProgressBar({
-            label: "Default Images to vehicles ",
+            label: "Default images to vehicles ",
             pct: Math.floor((defaultImageToVehicleCount / actorCount) * 100)
         });
         defaultImageToVehicleCount += 1;
@@ -621,7 +622,7 @@ async function importImageFromOggImageFolder(actors) {
     });
 
     SceneNavigation.displayProgressBar({
-        label: "Default Images to vehicles",
+        label: "Default images to vehicles ",
         pct: 100
     });
 
@@ -644,7 +645,7 @@ async function importImageFromOggImageFolder(actors) {
         let actor = actors.filter(i => i.flags.starwarsffg?.ffgimportid == fileName);
         let imageName = actor[0] ? extractFileName(actor[0].img) : 'shipdefence';
         SceneNavigation.displayProgressBar({
-            label: "Affected Images to vehicles",
+            label: "Affect images to vehicles",
             pct: Math.floor((currentTreatedFileCount / maxAffectable) * 100)
         });
         currentTreatedFileCount += 1;
@@ -660,7 +661,7 @@ async function importImageFromOggImageFolder(actors) {
         }
     });
     SceneNavigation.displayProgressBar({
-        label: "Affected Images to vehicles",
+        label: "Affect images to vehicles",
         pct: 100
     });
     return currentAffectedCount;
@@ -976,7 +977,7 @@ class DataImporter extends FormApplication {
         }
         if (action === "migrate") {
 
-            /*DELETE VEHICLE SILHOUETTE FOLDER*/
+            /*STEP#1 DELETE VEHICLE SILHOUETTE FOLDER*/
             //await this.asyncForEach(game.items, async(item) => {
             let items = game.items.filter(i => i.type === 'shipattachment');
             let itemCount = items.length;
@@ -1009,7 +1010,7 @@ class DataImporter extends FormApplication {
                 ui.notifications.info("Folder " + folderName + " deleted successfully");
             }
 
-            /*RESET THE ENTIRE MODULE*/
+            /*STEP#2 RESET THE ENTIRE MODULE*/
             game.settings.set('starwars-silhouette', 'vehicleImagesCount', 0);
             game.settings.set('starwars-silhouette', 'vehicleImagesSilhouetteCount', 0);
             game.settings.set('starwars-silhouette', 'creationShipAttachmentItems', 0);
@@ -1019,34 +1020,12 @@ class DataImporter extends FormApplication {
             game.settings.set('starwars-silhouette', 'folderReset', false);
             game.settings.set('starwars-silhouette', 'vehicleImageFolder', 'modules/starwars-silhouette/storage/image/VehicleImages');
             game.settings.set('starwars-silhouette', 'vehicleSilhouetteImageFolder', 'modules/starwars-silhouette/storage/image/VehicleSilhouettes');
-
-            /*let items = game.items.filter(i => i.type === 'species');
-            CONFIG.logger.debug(`Starting affect images on new module assets images pack`);
-            $(".import-progress.AffectShipAttachmentItems").toggleClass("import-hidden");
-            let moduleDefaultAssetsFolder = 'modules/star-wars-all-compendia/assets/images/packs';
-            let totalCount = items.length;
-            let currentCount = 0;
-
-            await this.asyncForEach(items, async(item) => {
-            let ffgimportid = item.flags.starwarsffg?.ffgimportid;
-            let itemImg = item.img;
-            let imageName = extractFileName(itemImg);
-
-            if (imageName === 'Gear' + ffgimportid){
-            //updateItemsImage(moduleDefaultAssetsFolder + "/icons/svg/"+ imageName + '.svg', item);
-            updateItemsImage(moduleDefaultAssetsFolder + "/species/"+ imageName + '.webp', item);
-            }
-
-            currentCount += 1;
-
-            $(".AffectShipAttachmentItems .import-progress-bar")
-            .width(`${Math.trunc((currentCount / totalCount) * 100)}%`)
-            .html(`<span>${Math.trunc((currentCount / totalCount) * 100)}%</span>`);
-
-
-            console.log(ffgimportid);
-            });*/
-
+            
+            /*STEP#3 REIMPORT ALL IMAGES -> WEBP*/
+            /*SETP#4 RECREATE SHIP ATTACHMENTS*/
+            /*STEP#5 REAFFECT ALL SHIPATTACHMENTITEMS INTO ALL THE VEHICLES*/
+            /*REBOOT WITH FORCE AFFECT IMAGES INTO ALL THE VEHICLES */
+            /*DEACTIVATE FORCE AFFECT IMAGES*/
         }
         if (action === "import") {
             CONFIG.logger.debug("Importing Data Files");
