@@ -10,7 +10,6 @@ class swSilouhetteModule {
         this.ID = randomID(24);
     }
 
-
     log(msg, ...args) {
         if (game && game.settings.get("starwars-silhouette", "verboseLogs")) {
             const color = "background: #6699ff; color: #000; font-size: larger;";
