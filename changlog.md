@@ -1,5 +1,8 @@
 ## RELEASE NOTES
 
+**Version [1.1.1]
+* Add a prompt before affect all the images into the vehicle actors
+
 **Version [1.1.0]
 * Add persistence storage when package is updated
 * Add button to create subdirectory into your path target

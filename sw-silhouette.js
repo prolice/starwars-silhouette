@@ -485,10 +485,7 @@ Hooks.on("renderSettingsConfig", (app, html, data) => {
 
 });
 
-Hooks.on("canvasReady", (canvas) => {
-
-
-});
+Hooks.on("canvasReady", (canvas) => {});
 
 Hooks.once("init", async function () {
     // TURN ON OR OFF HOOK DEBUGGING
@@ -534,11 +531,11 @@ Hooks.on("ready", async() => {
         game.settings.set('starwars-silhouette', 'folderReset', false);
         game.settings.set('starwars-silhouette', 'vehicleImageFolder', 'modules/starwars-silhouette/storage/image/VehicleImages');
         game.settings.set('starwars-silhouette', 'vehicleSilhouetteImageFolder', 'modules/starwars-silhouette/storage/image/VehicleSilhouettes');
-        game.settings.set('starwars-silhouette', 'updateMessage',false)
+        game.settings.set('starwars-silhouette', 'updateMessage', false)
 
     }
-    
-     let updateMessageDisplayed = false;
+
+    let updateMessageDisplayed = false;
     try {
         if (game.settings.get('starwars-silhouette', 'updateMessage')) {
             updateMessageDisplayed = game.settings.get('starwars-silhouette', 'updateMessage');
@@ -551,7 +548,7 @@ Hooks.on("ready", async() => {
 
     if (!updateMessageDisplayed) {
         Dialog.prompt({
-            title:"Star Wars Silhouette",
+            title: "Star Wars Silhouette",
             content: `
 <div class="container">
     <h2>Module information</h2>
@@ -574,8 +571,8 @@ Hooks.on("ready", async() => {
 </div>`
         });
     }
-    
-    game.settings.set('starwars-silhouette', 'updateMessage',true);
+
+    game.settings.set('starwars-silhouette', 'updateMessage', true);
 
 });
 
@@ -723,7 +720,7 @@ async function importImageFromOggImageFolder(actors) {
 
         }
     });
-    
+
     if (game.settings.get('starwars-silhouette', 'forceParsingVehicleImage')) {
         game.settings.set('starwars-silhouette', 'forceParsingVehicleImage', false);
     }
@@ -936,15 +933,23 @@ class DataImporter extends FormApplication {
 
         //importDataFinished = await this.render();
         $("div[id='first-step'][name='firststep']").attr("style", "display: flex;justify-content: flex-end; visibility: visible;");
-        game.settings.set('starwars-silhouette', 'autoChangeVehicleImage', true);
-        game.settings.set('starwars-silhouette', 'forceParsingVehicleImage', true);
+
+        const confirmation = await Dialog.confirm({
+            content: `Do you want to replace your token images</br>
+                with oggDude imported images ?`
+        });
+        if (confirmation) {
+            game.settings.set('starwars-silhouette', 'autoChangeVehicleImage', true);
+            game.settings.set('starwars-silhouette', 'forceParsingVehicleImage', true);
+        }
 
         importDataFinished = await this.handleCreationAction("creation");
 
-        const confirmation = await Dialog.confirm({
-            content: "Do you want to reload now ?</BR><i>In order to (re)affect all the images into your vehicles</i>"
+        const confirmation_reload = await Dialog.confirm({
+            title: "Reload FoundryVTT",
+            content: "Do you want to reload now ?</BR>"
         });
-        if (confirmation) {
+        if (confirmation_reload) {
             location.reload();
         }
     }
@@ -1153,8 +1158,6 @@ class DataImporter extends FormApplication {
                 ui.notifications.info("Folder " + folderName + " deleted successfully");
             }
 
-            $(".import-progress.AffectShipAttachmentItems").toggleClass("import-hidden");
-            $(".import-progress.ShipAttachmentItems").toggleClass("import-hidden");
             $("div[id='second-step'][name='secondstep']").attr("style", "display: flex;justify-content: flex-end;");
             /*STEP#2 RESET THE ENTIRE MODULE*/
             game.settings.set('starwars-silhouette', 'vehicleImagesCount', 0);
@@ -1284,8 +1287,10 @@ class DataImporter extends FormApplication {
             // Log the start of the import process
             CONFIG.logger.debug(`Starting Oggdude ${successMessage} Import`);
             //let progressSubClassName = successMessage.charAt(0).toLowerCase() + successMessage.slice(1).replace(/\s/g, '');
-            // Show the import progress bar
-            $(`.import-progress.${progressSubClassName}`).toggleClass("import-hidden");
+            if ($(`.import-progress.${progressSubClassName}`).hasClass("import-hidden")) {
+                // Show the import progress bar
+                $(`.import-progress.${progressSubClassName}`).toggleClass("import-hidden");
+            }
 
             // Process each file
             await this.asyncForEach(files, async(file) => {
@@ -1362,7 +1367,9 @@ class DataImporter extends FormApplication {
         const actors = game.actors.filter(i => i.type === 'vehicle');
 
         CONFIG.logger.debug(`Starting Ship Attachment Silhouette creation`);
-        $(".import-progress.ShipAttachmentItems").toggleClass("import-hidden");
+        if ($(".import-progress.ShipAttachmentItems").hasClass("import-hidden")) {
+            $(".import-progress.ShipAttachmentItems").toggleClass("import-hidden");
+        }
 
         let folderId = '';
         if (!game.settings.get('starwars-silhouette', 'folderCreated')) {
@@ -1407,7 +1414,9 @@ class DataImporter extends FormApplication {
         const actors = game.actors.filter(i => i.type === 'vehicle');
 
         CONFIG.logger.debug(`Starting ship attachment items to all vehicles`);
-        $(".import-progress.AffectShipAttachmentItems").toggleClass("import-hidden");
+        if ($(".import-progress.AffectShipAttachmentItems").hasClass("import-hidden")) {
+            $(".import-progress.AffectShipAttachmentItems").toggleClass("import-hidden");
+        }
 
         const totalCount = actors.length;
         let currentCount = 0;
