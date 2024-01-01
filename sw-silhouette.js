@@ -534,6 +534,7 @@ Hooks.on("ready", async() => {
         game.settings.set('starwars-silhouette', 'folderReset', false);
         game.settings.set('starwars-silhouette', 'vehicleImageFolder', 'modules/starwars-silhouette/storage/image/VehicleImages');
         game.settings.set('starwars-silhouette', 'vehicleSilhouetteImageFolder', 'modules/starwars-silhouette/storage/image/VehicleSilhouettes');
+        game.settings.set('starwars-silhouette', 'updateMessage',false)
 
     }
     
@@ -574,7 +575,8 @@ Hooks.on("ready", async() => {
         });
     }
     
-    game.settings.set('starwars-silhouette', 'updateMessage',false);
+    game.settings.set('starwars-silhouette', 'updateMessage',true);
+
 });
 
 Hooks.on("renderActorSheetFFG", (app, html, data) => {
@@ -708,7 +710,8 @@ async function importImageFromOggImageFolder(actors) {
             pct: Math.floor((currentTreatedFileCount / maxAffectable) * 100)
         });
         currentTreatedFileCount += 1;
-        if (imageName === 'mystery-man' || imageName === 'shipdefence' || game.settings.get('starwars-silhouette', 'forceParsingVehicleImage')) {
+        let forceAffectation = game.settings.get('starwars-silhouette', 'forceParsingVehicleImage');
+        if (imageName === 'mystery-man' || imageName === 'shipdefence' || forceAffectation) {
             if (actor) {
                 let imageUrl = actor[0] ? folderPath + `/${actor[0].flags.starwarsffg.ffgimportid}.webp` : defaultSilhouette;
                 if (actor[0]) {
@@ -717,11 +720,13 @@ async function importImageFromOggImageFolder(actors) {
                     console.log("affected image:" + imageUrl + "in " + actorId);
                 }
             }
-            if (game.settings.get('starwars-silhouette', 'forceParsingVehicleImage')) {
-                game.settings.set('starwars-silhouette', 'forceParsingVehicleImage', false);
-            }
+
         }
     });
+    
+    if (game.settings.get('starwars-silhouette', 'forceParsingVehicleImage')) {
+        game.settings.set('starwars-silhouette', 'forceParsingVehicleImage', false);
+    }
     SceneNavigation.displayProgressBar({
         label: "Affect images to vehicles",
         pct: 100
