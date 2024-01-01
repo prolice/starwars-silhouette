@@ -34,27 +34,39 @@ This documentation provides a step-by-step guide on how to import images into th
 
 Before starting the image importation process, make sure you have imported at least one type of vehicle (Planetary Vehicles or Space Vehicles) using the oggDude importer.
 
+![OggDude vehicle importation](screenshot/OggDude_compendium.webp)
+
 ## 1. Configuration Settings
 
-1.1 Navigate to the "Configuration Settings" section within the application. This is typically accessible from the main dashboard or a designated settings area.
+1.1 Navigate to the "Configuration Settings" section within the application.
 
-1.2 Choose your destination folders by specifying the path. The default path is `/module/starwars-silhouette/storage/image/...`. You have the option to create a subdirectory within the destination folder or use the default destination, which already contains two subfolders.
+![Configuration window](screenshot/choose_destination.webp)
 
-![Choose Destination Folders](images/choose_destination.png)
+1.2 Choose your destination folders by specifying the path. The default path is `/module/starwars-silhouette/storage/image/...`.
+
+![Choose Destination Folders](screenshot/Configuration_Window.webp)
+
+You have the option to create a subdirectory within the destination folder or use the default destination, which already contains two subfolders.
+
+![Create subdirectory in Destination Folders](screenshot/import_images_button.webp)
 
 ## 2. Image Importation
 
 1.4 Click on the "Import Images" button to initiate the image importation process.
 
-![Import Images Button](images/import_images_button.png)
+![Import Images Button](screenshot/start_import_button.webp)
 
 1.5 Load the `data.zip` file obtained from oggDude by selecting it through the file dialog.
 
+![Load oggDude data.zip file](screenshot/Import_create_affect_window.webp)
+
 1.6 Check all the checkboxes to ensure that all necessary configurations are selected for the importation process.
+
+![All checkboxes activated](screenshot/All-checkboxes-activated.webp)
 
 1.7 Click on the "Start Import" button to begin the importation process.
 
-![Start Import Button](images/start_import_button.png)
+![Start Import Button](screenshot/All-checkboxes-activated.webp)
 
 The application will now proceed to import the images from the `data.zip` file into the specified destination folders. Ensure that you monitor the progress and address any potential errors or warnings that may arise during the importation process.
 
