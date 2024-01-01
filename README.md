@@ -58,11 +58,9 @@ You have the option to create a subdirectory within the destination folder or us
 
 1.5 Load the `data.zip` file obtained from oggDude by selecting it through the file dialog.
 
-![Load oggDude data.zip file](screenshot/Import_create_affect_window.webp)
+![Load oggDude data.zip file](screenshot/load_data_zip.webp)
 
 1.6 Check all the checkboxes to ensure that all necessary configurations are selected for the importation process.
-
-![All checkboxes activated](screenshot/All-checkboxes-activated.webp)
 
 1.7 Click on the "Start Import" button to begin the importation process.
 
