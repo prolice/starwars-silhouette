@@ -26,6 +26,38 @@ to affect it into your actor sheet as the token image and the silhouette as the 
 **Features Overview:**
 * [![Features overview](https://img.youtube.com/vi/l28kL0sw0fU/0.jpg)](https://youtu.be/l28kL0sw0fU)
 
+# Image Importation Procedure
+
+This documentation provides a step-by-step guide on how to import images into the application. Follow the instructions below to ensure a successful image importation process.
+
+## 1. Configuration Settings
+
+1.1 Navigate to the "Configuration Settings" section within the application. This is typically accessible from the main dashboard or a designated settings area.
+
+1.2 Choose your destination folders by specifying the path. The default path is `/module/starwars-silhouette/storage/image/...`. You have the option to create a subdirectory within the destination folder or use the default destination, which already contains two subfolders.
+
+![Choose Destination Folders](images/choose_destination.png)
+
+## 2. Image Importation
+
+1.4 Click on the "Import Images" button to initiate the image importation process.
+
+![Import Images Button](images/import_images_button.png)
+
+1.5 Load the `data.zip` file obtained from oggDude by selecting it through the file dialog.
+
+1.6 Check all the checkboxes to ensure that all necessary configurations are selected for the importation process.
+
+1.7 Click on the "Start Import" button to begin the importation process.
+
+![Start Import Button](images/start_import_button.png)
+
+The application will now proceed to import the images from the `data.zip` file into the specified destination folders. Ensure that you monitor the progress and address any potential errors or warnings that may arise during the importation process.
+
+**Note:** It is recommended to review the application logs or notifications for any detailed information about the importation process, such as success messages or error reports.
+
+Congratulations! You have successfully completed the image importation procedure. If you encounter any issues or have specific questions, refer to the application's documentation or seek assistance from the support team.
+
 ### Warning
 If you use this module as a "Release Candidate", please be sure that you have made a backup of your world!
 There is v1.0.0+, you can use it more safely but still a backup is not too much to be sure ;-)
