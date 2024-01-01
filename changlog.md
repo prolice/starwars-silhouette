@@ -1,4 +1,6 @@
 ## RELEASE NOTES
+**Version [1.1.2]
+* Place new PURPOSE file as png to ensure folder creation
 
 **Version [1.1.1]
 * Add a prompt before affect all the images into the vehicle actors
