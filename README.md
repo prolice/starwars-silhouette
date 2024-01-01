@@ -28,7 +28,11 @@ to affect it into your actor sheet as the token image and the silhouette as the 
 
 # Image Importation Procedure
 
-This documentation provides a step-by-step guide on how to import images into the application. Follow the instructions below to ensure a successful image importation process.
+This documentation provides a step-by-step guide on how to import images into the application. Before proceeding, ensure that you have imported at least one type of vehicle (Planetary Vehicles or Space Vehicles) using the oggDude importer. Follow the instructions below to ensure a successful image importation process.
+
+## Prerequisite: Importing Vehicles
+
+Before starting the image importation process, make sure you have imported at least one type of vehicle (Planetary Vehicles or Space Vehicles) using the oggDude importer.
 
 ## 1. Configuration Settings
 
@@ -57,6 +61,7 @@ The application will now proceed to import the images from the `data.zip` file i
 **Note:** It is recommended to review the application logs or notifications for any detailed information about the importation process, such as success messages or error reports.
 
 Congratulations! You have successfully completed the image importation procedure. If you encounter any issues or have specific questions, refer to the application's documentation or seek assistance from the support team.
+
 
 ### Warning
 If you use this module as a "Release Candidate", please be sure that you have made a backup of your world!
