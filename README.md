@@ -40,11 +40,11 @@ Before starting the image importation process, make sure you have imported at le
 
 1.1 Navigate to the "Configuration Settings" section within the application.
 
-![Configuration window](screenshot/choose_destination.webp)
+![Configuration window](screenshot/Configuration_Window.webp)
 
 1.2 Choose your destination folders by specifying the path. The default path is `/module/starwars-silhouette/storage/image/...`.
 
-![Choose Destination Folders](screenshot/Configuration_Window.webp)
+![Choose Destination Folders](screenshot/choose_destination.webp)
 
 You have the option to create a subdirectory within the destination folder or use the default destination, which already contains two subfolders.
 
