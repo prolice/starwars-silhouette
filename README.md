@@ -24,7 +24,7 @@ It takes the oggdude import id code in your actor item and looking for an image 
 to affect it into your actor sheet as the token image and the silhouette as the new silhouette image.
 
 **Features Overview:**
-* [![Features overview](https://img.youtube.com/vi/l28kL0sw0fU/0.jpg)](https://youtu.be/l28kL0sw0fU)
+* [![Features overview](https://img.youtube.com/vi/l28kL0sw0fU/0.jpg)](https://youtu.be/ME9IVaAEL1s)
 
 # Image Importation Procedure
 
