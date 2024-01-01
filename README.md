@@ -70,7 +70,7 @@ The application will now proceed to import the images from the `data.zip` file i
 
 **Note:** It is recommended to review the application logs or notifications for any detailed information about the importation process, such as success messages or error reports.
 
-Congratulations! You have successfully completed the image importation procedure. If you encounter any issues or have specific questions, refer to the application's documentation or seek assistance from the support team.
+Congratulations! You have successfully completed the image importation procedure. If you encounter any issues or have specific questions, refer to the application's documentation or seek assistance from the support.
 
 
 ### Warning
