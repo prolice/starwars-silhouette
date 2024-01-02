@@ -26,9 +26,9 @@
   ],
   "bugs": "https://github.com/prolice/starwars-silhouette/issues",
   "url": "https://github.com/prolice/starwars-silhouette",
-  "readme": "https://github.com/prolice/starwars-silhouette/blob/starwars-silhouette-dev/README.md",
-  "changelog": "https://github.com/prolice/starwars-silhouette/blob/starwars-silhouette-dev/changlog.md",
-  "manifest": "https://raw.githubusercontent.com/prolice/starwars-silhouette/starwars-silhouette-dev/module.json",
+  "readme": "https://github.com/prolice/starwars-silhouette/blob/starwars-silhouette/README.md",
+  "changelog": "https://github.com/prolice/starwars-silhouette/blob/starwars-silhouette/changlog.md",
+  "manifest": "https://raw.githubusercontent.com/prolice/starwars-silhouette/starwars-silhouette/module.json",
   "download": "https://github.com/prolice/starwars-silhouette/releases/download/v1.1.2/module.zip",
   "id": "starwars-silhouette",
   "relationships": {
