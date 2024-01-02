@@ -229,6 +229,17 @@ class swSilouhetteModule {
                 console.log(value);
             },
         });
+        
+        game.settings.register('starwars-silhouette', 'firstIntallation', {
+            name: 'First Installation',
+            hint: '',
+            scope: 'world',
+            type: Boolean,
+        default:
+            true,
+            config: false,
+            restricted: true
+        });
 
     }
 }
@@ -485,8 +496,6 @@ Hooks.on("renderSettingsConfig", (app, html, data) => {
 
 });
 
-Hooks.on("canvasReady", (canvas) => {});
-
 Hooks.once("init", async function () {
     // TURN ON OR OFF HOOK DEBUGGING
     CONFIG.debug.hooks = false;
@@ -529,10 +538,13 @@ Hooks.on("ready", async() => {
         game.settings.set('starwars-silhouette', 'folderCreated', false);
         game.settings.set('starwars-silhouette', 'folderId', '');
         game.settings.set('starwars-silhouette', 'folderReset', false);
-        game.settings.set('starwars-silhouette', 'vehicleImageFolder', 'modules/starwars-silhouette/storage/image/VehicleImages');
-        game.settings.set('starwars-silhouette', 'vehicleSilhouetteImageFolder', 'modules/starwars-silhouette/storage/image/VehicleSilhouettes');
-        game.settings.set('starwars-silhouette', 'updateMessage', false)
-
+        
+        if (typeof ForgeVTT !== "undefined" && ForgeVTT?.usingTheForge) {
+            game.settings.set('starwars-silhouette', 'vehicleImageFolder', 'modules/starwars-silhouette/storage/image/VehicleImages');
+            game.settings.set('starwars-silhouette', 'vehicleSilhouetteImageFolder', 'modules/starwars-silhouette/storage/image/VehicleSilhouettes');
+        }
+        
+        game.settings.set('starwars-silhouette', 'updateMessage', false);
     }
 
     let updateMessageDisplayed = false;
@@ -544,6 +556,31 @@ Hooks.on("ready", async() => {
         }
     } catch (err) {
         updateMessageDisplayed = false;
+    }
+    game.settings.set('starwars-silhouette', 'firstIntallation',true);
+    if (game.settings.get('starwars-silhouette', 'firstIntallation')){
+        game.settings.set('starwars-silhouette', 'firstIntallation',false);
+        if (typeof ForgeVTT !== "undefined" && ForgeVTT?.usingTheForge) {
+             Dialog.prompt({
+            title: "Star Wars Silhouette on the Forge",
+            content: `
+                    <div class="container">
+                        <h2>IMPORTANT INFORMATION</h2>
+                        The Forge does not allow image to be upload into the core module.
+                        It is recommended to relocate your </br>
+                        "Vehicle images" and your "Silhouette images" to </br>
+                        your "Assets Library"
+                        <h2>How to access the folder path configuration</h2>
+                        <ul>
+                            <li>Go to "Configuration Settings"</li>
+                            <li>Star Wars - Silhouette section
+                                <img src="https://raw.githubusercontent.com/prolice/starwars-silhouette/starwars-silhouette/screenshot/choose_destination.webp">
+                            </li>
+                            <li>Change the destination folder into your Assets Library</li>
+                        </ul>
+                    </div>`
+        });
+        }
     }
 
     if (!updateMessageDisplayed) {
@@ -1167,8 +1204,11 @@ class DataImporter extends FormApplication {
             game.settings.set('starwars-silhouette', 'folderCreated', false);
             game.settings.set('starwars-silhouette', 'folderId', '');
             game.settings.set('starwars-silhouette', 'folderReset', false);
-            game.settings.set('starwars-silhouette', 'vehicleImageFolder', 'modules/starwars-silhouette/storage/image/VehicleImages');
-            game.settings.set('starwars-silhouette', 'vehicleSilhouetteImageFolder', 'modules/starwars-silhouette/storage/image/VehicleSilhouettes');
+
+            if (typeof ForgeVTT !== "undefined" && ForgeVTT?.usingTheForge) {
+                game.settings.set('starwars-silhouette', 'vehicleImageFolder', 'modules/starwars-silhouette/storage/image/VehicleImages');
+                game.settings.set('starwars-silhouette', 'vehicleSilhouetteImageFolder', 'modules/starwars-silhouette/storage/image/VehicleSilhouettes');
+            }
 
             /*STEP#3 REIMPORT ALL IMAGES -> WEBP*/
             /*SETP#4 RECREATE SHIP ATTACHMENTS*/
@@ -1182,7 +1222,33 @@ class DataImporter extends FormApplication {
             this.migrateImagesAndAttachments();
         }
         if (action === "creation") {
-            this.handleCreationAction(action);
+            let items = game.items.filter(i => i.type === 'armour');
+            CONFIG.logger.debug(`Starting affect images on new module assets images pack`);
+            if ($(".import-progress.AffectShipAttachmentItems").hasClass("import-hidden")) {
+                $(".import-progress.AffectShipAttachmentItems").toggleClass("import-hidden");
+            }
+            let moduleDefaultAssetsFolder = 'modules/star-wars-all-compendia/assets/images/packs';
+            let totalCount = items.length;
+            let currentCount = 0;
+
+            await this.asyncForEach(items, async(item) => {
+                let ffgimportid = item.flags.starwarsffg?.ffgimportid;
+                let itemImg = item.img;
+                let imageName = extractFileName(itemImg);
+
+                if (imageName === 'Armor' + ffgimportid) {
+                    //updateItemsImage(moduleDefaultAssetsFolder + "/icons/svg/"+ imageName + '.svg', item);
+                    updateItemsImage(moduleDefaultAssetsFolder + "/armor/" + imageName + '.webp', item);
+                }
+
+                currentCount += 1;
+
+                $(".AffectShipAttachmentItems .import-progress-bar")
+                .width(`${Math.trunc((currentCount / totalCount) * 100)}%`)
+                .html(`<span>${Math.trunc((currentCount / totalCount) * 100)}%</span>`);
+
+                console.log(ffgimportid);
+            });
         }
     }
 
