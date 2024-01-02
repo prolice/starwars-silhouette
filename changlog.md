@@ -1,4 +1,7 @@
 ## RELEASE NOTES
+**Version [1.1.3-alpha1]
+* Manage Assets Library in The Forge
+
 **Version [1.1.2]
 * Place new PURPOSE file as png to ensure folder creation
 
