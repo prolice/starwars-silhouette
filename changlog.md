@@ -1,4 +1,7 @@
 ## RELEASE NOTES
+**Version [1.2.1]
+* Fix bug in Hooks "on ready" --> wrong test envt "ForgeVTT"
+
 **Version [1.2.0]
 * Compatibility with FVTT 12.330 & Starwars System 1.903
 
