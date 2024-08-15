@@ -1205,7 +1205,7 @@ class DataImporter extends FormApplication {
             game.settings.set('starwars-silhouette', 'folderId', '');
             game.settings.set('starwars-silhouette', 'folderReset', false);
 
-            if (typeof ForgeVTT !== "undefined" && ForgeVTT?.usingTheForge) {
+            if (typeof ForgeVTT === "undefined" && !ForgeVTT?.usingTheForge) {
                 game.settings.set('starwars-silhouette', 'vehicleImageFolder', 'modules/starwars-silhouette/storage/image/VehicleImages');
                 game.settings.set('starwars-silhouette', 'vehicleSilhouetteImageFolder', 'modules/starwars-silhouette/storage/image/VehicleSilhouettes');
             }
