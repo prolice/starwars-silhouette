@@ -1,4 +1,7 @@
 ## RELEASE NOTES
+**Version [1.2.0]
+* Compatibility with FVTT 12.330 & Starwars System 1.903
+
 **Version [1.2.0-alpha1]
 * Manage Assets Library in The Forge (still in progress)
 * Compatibility with FVTT 12.330 & Starwars System 1.903
