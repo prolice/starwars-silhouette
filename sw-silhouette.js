@@ -614,7 +614,7 @@ Hooks.on("ready", async() => {
 });
 
 Hooks.on("renderActorSheetFFG", (app, html, data) => {
-    const dirHeader = html[0].querySelector(".defense-decoration");
+    const dirHeader = html[0].querySelector(".defense-block");
 
     let actor = game.actors.get(data.actor._id).prototypeToken;
 
