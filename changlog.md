@@ -1,5 +1,8 @@
 ## RELEASE NOTES
 **Version [1.1.2]
+* Compatibility with FVTT 12.330 & Starwars System 1.903
+
+**Version [1.1.2]
 * Place new PURPOSE file as png to ensure folder creation
 
 **Version [1.1.1]
