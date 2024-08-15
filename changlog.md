@@ -1,5 +1,5 @@
 ## RELEASE NOTES
-**Version [1.1.2]
+**Version [1.2.0]
 * Compatibility with FVTT 12.330 & Starwars System 1.903
 
 **Version [1.1.2]
