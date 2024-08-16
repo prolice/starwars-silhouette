@@ -527,6 +527,7 @@ Hooks.on("ready", async() => {
             //SceneNavigation.displayProgressBar({label: "Test Progress Bar",pct: 45});
             let currentAffectedCount = await importImageFromOggImageFolder(actors);
             ui.notifications.info("Number of vehicle with a new image: " + currentAffectedCount.toString() + " / " + actors.length + " vehicles");
+            game.settings.set('starwars-silhouette', 'autoChangeVehicleImage',false);
         }
     }
 
