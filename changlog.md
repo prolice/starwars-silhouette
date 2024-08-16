@@ -1,4 +1,7 @@
 ## RELEASE NOTES
+**Version [1.2.2]
+* Fix bug in Hooks "on ready" --> Deactivate autoChangeVehicleImage when its done 
+
 **Version [1.2.1]
 * Fix bug in Hooks "on ready" --> wrong test envt "ForgeVTT"
 
